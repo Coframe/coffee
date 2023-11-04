@@ -1,6 +1,6 @@
 # Coffee ☕
 
-— **Cof**rame **F**ront-**E**nd **E**ngineer
+— <ins>**Cof**</ins>rame <ins>**F**</ins>ront-<ins>**E**</ins>nd <ins>**E**</ins>ngineer
 
 Build a frontend with prompting.
 
