@@ -1,0 +1,23 @@
+{
+    "manifest_version": 2,
+    "name": "Coffee",
+    "version": "1.0",
+    "permissions": [
+      "http://localhost:8000/",
+      "http://localhost:3087/"
+    ],
+    "content_scripts": [
+      {
+        "matches": ["http://localhost:3087/*"],
+        "js": ["content.js"]
+      }
+    ],
+    "browser_action": {
+      "default_popup": "popup.html",
+      "default_icon": {
+        "16": "images/coframe16.png",
+        "48": "images/coframe48.png",
+        "128": "images/coframe128.png"
+      }
+    }
+  }
