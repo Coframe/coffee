@@ -46,7 +46,7 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from ai import AI
-from utils import prompt_constructor, llm_write_file, build_directory_structure
+from utils import prompt_constructor, llm_write_file, build_directory_structure, debug_file
 from config import HIERARCHY, GUIDELINES, MODIFY_FILE, WRITE_CODE, SINGLEFILE
 import subprocess
 
@@ -90,16 +90,23 @@ async def generate(user_prompt: Prompt):
                                         file_content=file_content,
                                         directory_structure=build_directory_structure(frontend_dir+"app/"),
                                         guidelines=GUIDELINES)
-    print(prompt)
+    
     llm_write_file(prompt,
                     target_path=frontend_dir+"app/page.tsx",
                     waiting_message=f"Writing code for app/page.tsx...",
                     success_message=None,
                     globals=globals)
     
-    # Commit and push the changes to GitHub
-    subprocess.run(['git', 'add', '.'], check=True)
-    subprocess.run(['git', 'commit', '-m', user_prompt.text], check=True)
-    subprocess.run(['git', 'push'], check=True)
-
-    return {"message": "Response written to file: app/page.tsx"}
+    debug_result = debug_file(globals)
+    
+    if debug_result == "success":
+        # Commit and push the changes to GitHub
+        subprocess.run(['git', 'add', '.'], check=True)
+        subprocess.run(['git', 'commit', '-m', user_prompt.text], check=True)
+        subprocess.run(['git', 'push'], check=True)
+        print("Changes pushed to GitHub")
+        return {"message": "Response written to file: app/page.tsx"}
+    
+    else:
+        print("Build failed, changes not pushed to Git")
+        return {"message": "Build failed, changes not pushed to Git", "error": debug_result}

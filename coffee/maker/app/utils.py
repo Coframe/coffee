@@ -1,4 +1,5 @@
 import os
+import subprocess
 import typer
 from yaspin import yaspin
 import fnmatch
@@ -167,3 +168,22 @@ def read_from_memory(filename):
     with open('memory/'+filename, 'r') as file:
         content = file.read()
     return content
+
+def debug_file(globals):
+    try:
+        with yaspin(text="Building your program...", spinner="dots") as spinner:
+            subprocess.run(["npm", "run", "build"], cwd=globals.frontend_dir, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True, text=True)
+            spinner.ok("✅ ")
+        success_text = typer.style("Your app is compiling.", fg=typer.colors.GREEN)
+        typer.echo(success_text)
+        return "success"
+    except subprocess.CalledProcessError as e:
+        print("ERROR: ",e.output)
+        error_message = e.output
+        error_text = typer.style("Something isn't right with the latest build.", fg=typer.colors.RED)
+        typer.echo(error_text)
+        return error_message
+
+        # # have typer ask if the user would like to use AI to fix it? If so, call function fix(). if not, raise typer.Exit()
+        # if typer.confirm("Would you like GPT-Migrate to try to fix this?"):
+        #     return error_message
