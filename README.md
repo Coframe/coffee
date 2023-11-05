@@ -9,7 +9,7 @@ https://private-user-images.githubusercontent.com/25165841/280459550-e8c1ee7e-68
 App is rendered out on the frontend. On top of this frontend is the coframe copilot, which is like the editor. As you prompt, the page updates in realtime. You can select parts of the page to refine. It should output some type of organization for API consumption expectation, and create a system for mocks where it expects APIs to come from. It should know how to route to different parts of the filesystem based on how we prompt it.
 
 ### How to run
-1. Install requirements (`pip3 install -r requirements.txt` in `coffee/maker/app`, `npm install` in `frontend`)
+1. Install requirements (`pip3 install -r requirements.txt` in `coffee/maker`, `npm install` in `frontend`)
 
 2. In `frontend` (exposes port 3087):
 
@@ -24,7 +24,7 @@ uvicorn main:app --reload
 ```
 
 
-4. Install chrome extension from the `coffee/extension` folder. 
+4. Install chrome extension from the `coffee/extension` folder. Go to https://chrome.google.com/webstore, toggle Developer mode on, Load unpacked and select the extension folder. 
 
 Todo: Dockerize, clean up.
 
