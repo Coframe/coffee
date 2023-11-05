@@ -169,10 +169,10 @@ def read_from_memory(filename):
         content = file.read()
     return content
 
-def debug_file(globals):
+def debug_file(frontend_dir):
     try:
         with yaspin(text="Building your program...", spinner="dots") as spinner:
-            subprocess.run(["npm", "run", "build"], cwd=globals.frontend_dir, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True, text=True)
+            subprocess.run(["npm", "run", "build"], cwd=frontend_dir, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True, text=True)
             spinner.ok("✅ ")
         success_text = typer.style("Your app is compiling.", fg=typer.colors.GREEN)
         typer.echo(success_text)

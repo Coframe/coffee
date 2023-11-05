@@ -97,7 +97,7 @@ async def generate(user_prompt: Prompt):
                     success_message=None,
                     globals=globals)
     
-    debug_result = debug_file(globals)
+    debug_result = debug_file(frontend_dir)
     
     if debug_result == "success":
         # Commit and push the changes to GitHub
