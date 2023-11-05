@@ -51,11 +51,6 @@ def llm_write_file(prompt,target_path,waiting_message,success_message,globals):
     else:
         success_text = typer.style(f"Created {file_name} at {globals.frontend_dir}", fg=typer.colors.GREEN)
         typer.echo(success_text)
-    
-        # Commit and push the changes to GitHub
-    subprocess.run(['git', 'add', '.'], check=True)
-    subprocess.run(['git', 'commit', '-m', f'Add file {file_name}'], check=True)
-    subprocess.run(['git', 'push'], check=True)
 
     return file_name, language, file_content
 

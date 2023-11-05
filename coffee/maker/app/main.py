@@ -48,6 +48,7 @@ from pydantic import BaseModel
 from ai import AI
 from utils import prompt_constructor, llm_write_file, build_directory_structure
 from config import HIERARCHY, GUIDELINES, MODIFY_FILE, WRITE_CODE, SINGLEFILE
+import subprocess
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -70,7 +71,7 @@ class Prompt(BaseModel):
     text: str
 
 @app.post("/prompt")
-async def generate(prompt: Prompt):
+async def generate(user_prompt: Prompt):
     frontend_dir = "../../../frontend/"
     ai = AI(
         model="gpt-4-32k",
@@ -84,7 +85,7 @@ async def generate(prompt: Prompt):
     with open(frontend_dir+"app/page.tsx", "r") as f:
         file_content = f.read()
     
-    prompt = write_code_template.format(prompt=prompt.text,
+    prompt = write_code_template.format(prompt=user_prompt.text,
                                         sourcefile=frontend_dir+"app/page.tsx",
                                         file_content=file_content,
                                         directory_structure=build_directory_structure(frontend_dir+"app/"),
@@ -95,5 +96,10 @@ async def generate(prompt: Prompt):
                     waiting_message=f"Writing code for app/page.tsx...",
                     success_message=None,
                     globals=globals)
+    
+    # Commit and push the changes to GitHub
+    subprocess.run(['git', 'add', '.'], check=True)
+    subprocess.run(['git', 'commit', '-m', user_prompt.text], check=True)
+    subprocess.run(['git', 'push'], check=True)
 
     return {"message": "Response written to file: app/page.tsx"}
