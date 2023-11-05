@@ -4,8 +4,6 @@ from yaspin import yaspin
 from collections import Counter
 import fnmatch
 import re
-import shutil
-import subprocess
 
 
 def prompt_constructor(*args):

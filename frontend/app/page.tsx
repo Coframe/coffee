@@ -10,6 +10,9 @@ export default function Home() {
       <div className="text-4xl font-bold text-center text-white">
         Hello World
       </div>
+      <p className="text-xl text-center text-white mt-10">
+        Coframe is creating living interfaces.
+      </p>
     </main>
   )
 }
