@@ -4,6 +4,7 @@ import openai
 from utils import parse_code_string
 
 OPENAI_API_KEY = "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"
+openai.api_key = OPENAI_API_KEY
 
 class AI:
     def __init__(self, model="gpt-4-32k", temperature=0.1, max_tokens=10000):

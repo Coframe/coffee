@@ -89,7 +89,7 @@ async def generate(prompt: Prompt):
                                         file_content=file_content,
                                         directory_structure=build_directory_structure(frontend_dir+"app/"),
                                         guidelines=GUIDELINES)
-
+    print(prompt)
     llm_write_file(prompt,
                     target_path=frontend_dir+"app/page.tsx",
                     waiting_message=f"Writing code for app/page.tsx...",
