@@ -49,6 +49,7 @@ from ai import AI
 from utils import prompt_constructor, llm_write_file, build_directory_structure, debug_file
 from config import HIERARCHY, GUIDELINES, MODIFY_FILE, WRITE_CODE, SINGLEFILE
 import subprocess
+import shlex
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -101,8 +102,9 @@ async def generate(user_prompt: Prompt):
     
     if debug_result == "success":
         # Commit and push the changes to GitHub
+        commit_message = shlex.quote(user_prompt.text)[:47] + "..."
         subprocess.run(['git', 'add', '.'], check=True)
-        subprocess.run(['git', 'commit', '-m', user_prompt.text], check=True)
+        subprocess.run(['git', 'commit', '-m', commit_message], check=True)
         subprocess.run(['git', 'push'], check=True)
         print("Changes pushed to GitHub")
         return {"message": "Response written to file: app/page.tsx"}
