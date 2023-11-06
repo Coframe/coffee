@@ -108,9 +108,7 @@ async def generate(user_prompt: Prompt):
             subprocess.run(['git', 'add', '.'], check=True)
             print("Changes added to Git")
             subprocess.run(['git', 'commit', '-m', commit_message], check=True)
-            print("Changes committed to Git")
             subprocess.run(['git', 'push'], check=True)
-            print("Changes pushed to GitHub")
             return {"message": "Response written to file: app/page.tsx"}
         except Exception as e:
             print("Error pushing changes to GitHub:", e)

@@ -174,7 +174,7 @@ def debug_file(frontend_dir):
     try:
         with yaspin(text="Building your program...", spinner="dots") as spinner:
             subprocess.run(["npm", "run", "build"], cwd=frontend_dir, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True, text=True)
-            subprocess.Popen(["npm", "run", "dev"], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            subprocess.Popen(["npm", "run", "dev"])
             spinner.ok("✅ ")
         success_text = typer.style("Your app is compiling.", fg=typer.colors.GREEN)
         typer.echo(success_text)
@@ -185,7 +185,4 @@ def debug_file(frontend_dir):
         error_text = typer.style("Something isn't right with the latest build.", fg=typer.colors.RED)
         typer.echo(error_text)
         return error_message
-
-        # # have typer ask if the user would like to use AI to fix it? If so, call function fix(). if not, raise typer.Exit()
-        # if typer.confirm("Would you like GPT-Migrate to try to fix this?"):
-        #     return error_message
+        # todo, handle error
