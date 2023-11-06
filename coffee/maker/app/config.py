@@ -1,8 +1,7 @@
-import os
-
 HIERARCHY = "HIERARCHY"
 GUIDELINES = "p1_guidelines/guidelines"
 WRITE_CODE = "p2_actions/write_code"
+MODIFY_ELEMENT = "p3_modify/modify_element"
 MODIFY_FILE = "p3_modify/modify_file"
 CREATE_DOCKER = "p3_setup/create_target_docker"
 DEBUG_DOCKERFILE = "p3_debug/debug_target_docker"

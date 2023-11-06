@@ -45,9 +45,10 @@
 
 from fastapi import FastAPI
 from pydantic import BaseModel
+from typing import Optional
 from ai import AI
 from utils import prompt_constructor, llm_write_file, build_directory_structure
-from config import HIERARCHY, GUIDELINES, MODIFY_FILE, WRITE_CODE, SINGLEFILE
+from config import HIERARCHY, GUIDELINES, MODIFY_FILE, WRITE_CODE, SINGLEFILE, MODIFY_ELEMENT
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -68,9 +69,10 @@ class Globals:
 
 class Prompt(BaseModel):
     text: str
+    html: Optional[str] = None
 
 @app.post("/prompt")
-async def generate(prompt: Prompt):
+async def generate(user_prompt: Prompt):
     frontend_dir = "../../../frontend/"
     ai = AI(
         model="gpt-4-32k",
@@ -79,7 +81,10 @@ async def generate(prompt: Prompt):
 
     globals = Globals(frontend_dir, ai)
 
-    write_code_template = prompt_constructor(HIERARCHY, GUIDELINES, MODIFY_FILE, WRITE_CODE, SINGLEFILE)
+    if user_prompt.html:
+        write_code_template = prompt_constructor(HIERARCHY, GUIDELINES, MODIFY_ELEMENT, WRITE_CODE, SINGLEFILE)
+    else: 
+        write_code_template = prompt_constructor(HIERARCHY, GUIDELINES, MODIFY_FILE, WRITE_CODE, SINGLEFILE)
     file_content = ""
     with open(frontend_dir+"app/page.tsx", "r") as f:
         file_content = f.read()
@@ -88,12 +93,13 @@ async def generate(prompt: Prompt):
                                         sourcefile=frontend_dir+"app/page.tsx",
                                         file_content=file_content,
                                         directory_structure=build_directory_structure(frontend_dir+"app/"),
-                                        guidelines=GUIDELINES)
-
+                                        guidelines=GUIDELINES,
+                                        html=user_prompt.html if user_prompt.html else "")
+    
     llm_write_file(prompt,
                     target_path=frontend_dir+"app/page.tsx",
                     waiting_message=f"Writing code for app/page.tsx...",
                     success_message=None,
                     globals=globals)
-
+    
     return {"message": "Response written to file: app/page.tsx"}

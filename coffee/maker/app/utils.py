@@ -1,10 +1,8 @@
 import os
 import typer
 from yaspin import yaspin
-from collections import Counter
 import fnmatch
 import re
-import shutil
 
 
 def prompt_constructor(*args):
