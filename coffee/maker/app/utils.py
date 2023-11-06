@@ -4,6 +4,7 @@ import typer
 from yaspin import yaspin
 import fnmatch
 import re
+import psutil
 
 
 def prompt_constructor(*args):
@@ -173,6 +174,7 @@ def debug_file(frontend_dir):
     try:
         with yaspin(text="Building your program...", spinner="dots") as spinner:
             subprocess.run(["npm", "run", "build"], cwd=frontend_dir, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True, text=True)
+            subprocess.Popen(["npm", "run", "dev"], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             spinner.ok("✅ ")
         success_text = typer.style("Your app is compiling.", fg=typer.colors.GREEN)
         typer.echo(success_text)

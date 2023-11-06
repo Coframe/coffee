@@ -109,11 +109,11 @@ async def generate(user_prompt: Prompt):
             subprocess.run(['git', 'commit', '-m', commit_message], check=True)
             subprocess.run(['git', 'push'], check=True)
             print("Changes pushed to GitHub")
+            return {"message": "Response written to file: app/page.tsx"}
         except Exception as e:
             print("Error pushing changes to GitHub:", e)
             return {"message": "Response written to file: app/page.tsx", "error": "Error pushing changes to GitHub"}
-        return {"message": "Response written to file: app/page.tsx"}
     
     else:
-        print("Build failed, changes not pushed to Git")
+        # TODO debug and try again
         return {"message": "Build failed, changes not pushed to Git", "error": debug_result}
