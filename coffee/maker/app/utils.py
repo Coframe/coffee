@@ -28,12 +28,12 @@ def llm_run(prompt,waiting_message,success_message,globals):
     return output
 
 def llm_write_file(prompt,target_path,waiting_message,success_message,globals):
-    
+    print("writing file", prompt)
     file_content = ""
     with yaspin(text=waiting_message, spinner="dots") as spinner:
         file_name,language,file_content = globals.ai.write_code(prompt)[0]
         spinner.ok("✅ ")
-    
+    print(file_name, language, file_content)
     if file_name=="INSTRUCTIONS:":
         return "INSTRUCTIONS:","",file_content
 
