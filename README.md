@@ -24,7 +24,7 @@ uvicorn main:app --reload
 ```
 
 
-4. Install chrome extension from the `coffee/extension` folder. 
+4. Install chrome extension from the `coffee/extension` folder. Go to https://chrome.google.com/webstore, toggle Developer mode on, Load unpacked and select the extension folder.
 
 Todo: Dockerize, clean up.
 
