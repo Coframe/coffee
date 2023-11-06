@@ -173,6 +173,9 @@ def read_from_memory(filename):
 def debug_file(frontend_dir):
     try:
         with yaspin(text="Building your program...", spinner="dots") as spinner:
+            for proc in psutil.process_iter(['pid', 'name', 'cmdline']):
+                if proc.info['cmdline'] and 'npm run dev' in ' '.join(proc.info['cmdline']):
+                    proc.kill()
             subprocess.run(["npm", "run", "build"], cwd=frontend_dir, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True, text=True)
             subprocess.Popen(["npm", "run", "dev"], cwd=frontend_dir)
             spinner.ok("✅ ")

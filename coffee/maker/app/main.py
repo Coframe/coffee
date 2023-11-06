@@ -86,17 +86,17 @@ async def generate(user_prompt: Prompt):
     with open(frontend_dir+"app/page.tsx", "r") as f:
         file_content = f.read()
     
-    prompt = write_code_template.format(prompt=user_prompt.text,
-                                        sourcefile=frontend_dir+"app/page.tsx",
-                                        file_content=file_content,
-                                        directory_structure=build_directory_structure(frontend_dir+"app/"),
-                                        guidelines=GUIDELINES)
+    # prompt = write_code_template.format(prompt=user_prompt.text,
+    #                                     sourcefile=frontend_dir+"app/page.tsx",
+    #                                     file_content=file_content,
+    #                                     directory_structure=build_directory_structure(frontend_dir+"app/"),
+    #                                     guidelines=GUIDELINES)
     
-    llm_write_file(prompt,
-                    target_path=frontend_dir+"app/page.tsx",
-                    waiting_message=f"Writing code for app/page.tsx...",
-                    success_message=None,
-                    globals=globals)
+    # llm_write_file(prompt,
+                    # target_path=frontend_dir+"app/page.tsx",
+                    # waiting_message=f"Writing code for app/page.tsx...",
+                    # success_message=None,
+                    # globals=globals)
     
     debug_result = debug_file(frontend_dir)
     
