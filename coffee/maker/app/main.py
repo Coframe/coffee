@@ -106,7 +106,9 @@ async def generate(user_prompt: Prompt):
         print("Commit message:", commit_message)
         try: 
             subprocess.run(['git', 'add', '.'], check=True)
+            print("Changes added to Git")
             subprocess.run(['git', 'commit', '-m', commit_message], check=True)
+            print("Changes committed to Git")
             subprocess.run(['git', 'push'], check=True)
             print("Changes pushed to GitHub")
             return {"message": "Response written to file: app/page.tsx"}
