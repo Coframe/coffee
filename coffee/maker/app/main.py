@@ -86,27 +86,32 @@ async def generate(user_prompt: Prompt):
     with open(frontend_dir+"app/page.tsx", "r") as f:
         file_content = f.read()
     
-    prompt = write_code_template.format(prompt=user_prompt.text,
-                                        sourcefile=frontend_dir+"app/page.tsx",
-                                        file_content=file_content,
-                                        directory_structure=build_directory_structure(frontend_dir+"app/"),
-                                        guidelines=GUIDELINES)
+    # prompt = write_code_template.format(prompt=user_prompt.text,
+    #                                     sourcefile=frontend_dir+"app/page.tsx",
+    #                                     file_content=file_content,
+    #                                     directory_structure=build_directory_structure(frontend_dir+"app/"),
+    #                                     guidelines=GUIDELINES)
     
-    llm_write_file(prompt,
-                    target_path=frontend_dir+"app/page.tsx",
-                    waiting_message=f"Writing code for app/page.tsx...",
-                    success_message=None,
-                    globals=globals)
+    # llm_write_file(prompt,
+    #                 target_path=frontend_dir+"app/page.tsx",
+    #                 waiting_message=f"Writing code for app/page.tsx...",
+    #                 success_message=None,
+    #                 globals=globals)
     
     debug_result = debug_file(frontend_dir)
     
     if debug_result == "success":
         # Commit and push the changes to GitHub
         commit_message = shlex.quote(user_prompt.text)[:47] + "..."
-        subprocess.run(['git', 'add', '.'], check=True)
-        subprocess.run(['git', 'commit', '-m', commit_message], check=True)
-        subprocess.run(['git', 'push'], check=True)
-        print("Changes pushed to GitHub")
+        print("Commit message:", commit_message)
+        try: 
+            subprocess.run(['git', 'add', '.'], check=True)
+            subprocess.run(['git', 'commit', '-m', commit_message], check=True)
+            subprocess.run(['git', 'push'], check=True)
+            print("Changes pushed to GitHub")
+        except Exception as e:
+            print("Error pushing changes to GitHub:", e)
+            return {"message": "Response written to file: app/page.tsx", "error": "Error pushing changes to GitHub"}
         return {"message": "Response written to file: app/page.tsx"}
     
     else:
