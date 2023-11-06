@@ -103,6 +103,9 @@ var isMouseDown = false;
 var mouseX, mouseY;
 
 div.addEventListener('mousedown', function(e) {
+  if (e.target.id === 'myExtensionInput') {
+    return;
+  }
   isMouseDown = true;
   mouseX = e.clientX - div.offsetLeft;
   mouseY = e.clientY - div.offsetTop;
