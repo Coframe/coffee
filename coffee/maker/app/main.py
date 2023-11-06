@@ -45,6 +45,7 @@
 
 from fastapi import FastAPI
 from pydantic import BaseModel
+# from pyparsing import Optional
 from ai import AI
 from utils import prompt_constructor, llm_write_file, build_directory_structure, debug_file
 from config import HIERARCHY, GUIDELINES, MODIFY_FILE, WRITE_CODE, SINGLEFILE
@@ -70,6 +71,7 @@ class Globals:
 
 class Prompt(BaseModel):
     text: str
+    # html: Optional[str] = None
 
 @app.post("/prompt")
 async def generate(user_prompt: Prompt):
@@ -86,17 +88,17 @@ async def generate(user_prompt: Prompt):
     with open(frontend_dir+"app/page.tsx", "r") as f:
         file_content = f.read()
     
-    # prompt = write_code_template.format(prompt=user_prompt.text,
-    #                                     sourcefile=frontend_dir+"app/page.tsx",
-    #                                     file_content=file_content,
-    #                                     directory_structure=build_directory_structure(frontend_dir+"app/"),
-    #                                     guidelines=GUIDELINES)
+    prompt = write_code_template.format(prompt=user_prompt.text,
+                                        sourcefile=frontend_dir+"app/page.tsx",
+                                        file_content=file_content,
+                                        directory_structure=build_directory_structure(frontend_dir+"app/"),
+                                        guidelines=GUIDELINES)
     
-    # llm_write_file(prompt,
-                    # target_path=frontend_dir+"app/page.tsx",
-                    # waiting_message=f"Writing code for app/page.tsx...",
-                    # success_message=None,
-                    # globals=globals)
+    llm_write_file(prompt,
+                    target_path=frontend_dir+"app/page.tsx",
+                    waiting_message=f"Writing code for app/page.tsx...",
+                    success_message=None,
+                    globals=globals)
     
     debug_result = debug_file(frontend_dir)
     
