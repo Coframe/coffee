@@ -174,7 +174,7 @@ def debug_file(frontend_dir):
     try:
         with yaspin(text="Building your program...", spinner="dots") as spinner:
             subprocess.run(["npm", "run", "build"], cwd=frontend_dir, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True, text=True)
-            subprocess.Popen(["npm", "run", "dev"])
+            subprocess.Popen(["npm", "run", "dev"], cwd=frontend_dir)
             spinner.ok("✅ ")
         success_text = typer.style("Your app is compiling.", fg=typer.colors.GREEN)
         typer.echo(success_text)
