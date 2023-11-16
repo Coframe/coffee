@@ -89,7 +89,7 @@ async def generate(user_prompt: Prompt):
     with open(frontend_dir+"app/page.tsx", "r") as f:
         file_content = f.read()
     
-    prompt = write_code_template.format(prompt=prompt.text,
+    prompt = write_code_template.format(prompt=user_prompt.text,
                                         sourcefile=frontend_dir+"app/page.tsx",
                                         file_content=file_content,
                                         directory_structure=build_directory_structure(frontend_dir+"app/"),

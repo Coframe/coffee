@@ -57,7 +57,14 @@ export default function Home() {
                 <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" htmlFor="grid-message">
                   Message
                 </label>
-                <textarea className=" no-resize appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500 h-48 resize-none" id="grid-message"></textarea>
+                <textarea className=" no-resize appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500 h-48 resize-none" id="grid-message" placeholder="Enter your message here"></textarea>
+              </div>
+            </div>
+            <div className="flex flex-wrap -mx-3 mb-2">
+              <div className="w-full px-3 flex justify-end">
+                <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" type="submit">
+                  Submit
+                </button>
               </div>
             </div>
           </form>
