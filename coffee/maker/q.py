@@ -32,68 +32,66 @@ class UpdateFile(StreamFunction):
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "insert_after_index": {"type": "number", "description": "Insert new lines after this index"},
-                    "clear_before_index": {"type": "number", "description": "Remove all lines after insert and before this index"},
+                    "start_line_index": {"type": "number", "description": "Insert new lines after this index"},
+                    "end_line_index": {"type": "number", "description": "Remove all lines after insert and before this index"},
                     "new_lines": {"type": "array", "items": {"type": "string"}, "description": "New content to replace the original with. Make sure you escape json characters."}
                 },
-                "required": ["insert_after_index", "clear_before_index" "new_lines"]
+                "required": ["start_line_index", "end_line_index" "new_lines"]
             }
         }
 
+    def setup(self, filename=None):
+        self.filename = filename
+        with open(filename, 'r') as f:
+            self.lines = f.readlines()
 
-
-    def call(self, partial_json=None, finished=True, filename=None):
-        if(not filename or not partial_json):
+    def call(self, partial_json=None, finished=True, **kwargs):
+        if(not self.filename or not partial_json or not self.lines):
             return None
-
-        print('Updating filename:', filename)
-        if(not self.lines):
-            with open(filename, 'r') as f:
-                self.lines = f.readlines()
 
         parsed_args = self.parse_json(partial_json)
 
-        insert_after_index = parsed_args["insert_after_index"]
-        clear_before_index = parsed_args["clear_before_index"]
+        start_line_index = parsed_args["start_line_index"]
+        end_line_index = parsed_args["end_line_index"]
         new_lines = parsed_args["new_lines"]
 
         new_lines = [line for item in new_lines for line in item.split('\n')]
-        clear_before_index = clear_before_index or insert_after_index
-
-        if not finished:
-            print(new_lines)
+        end_line_index = end_line_index or start_line_index
 
         if finished:
+            print("\n".join(self.lines[start_line_index: end_line_index+1]))
+
             updated_lines = (
-                self.lines[:insert_after_index-1] +
+                self.lines[:start_line_index] +
                 [l.rstrip() + '\n' for l in new_lines] +  # Add new lines
-                self.lines[clear_before_index:]
+                self.lines[end_line_index:]
             )
 
             # Write the updated content back to the file
-            with open(filename, 'w') as f:
+            with open(self.filename, 'w') as f:
                 f.writelines(updated_lines)
+                self.lines = None
 
 
     def parse_json(self, partial_json):
         parser = ijson.parse(partial_json)
 
-        insert_after_index = None
-        clear_before_index = None
+        start_line_index = None
+        end_line_index = None
         new_lines = []
 
         try:
             for prefix, event, value in parser:
-                if (prefix, event) == ('insert_after_index', 'number'):
-                    insert_after_index = value
-                elif (prefix, event) == ('clear_before_index', 'number'):
-                    clear_before_index = value
+                if (prefix, event) == ('start_line_index', 'number'):
+                    start_line_index = value
+                elif (prefix, event) == ('end_line_index', 'number'):
+                    end_line_index = value
                 elif prefix == 'new_lines.item':
                     new_lines.append(value)
         except ijson.common.IncompleteJSONError:
             pass
 
-        return dict(insert_after_index=insert_after_index, clear_before_index=clear_before_index, new_lines=new_lines)
+        return dict(start_line_index=start_line_index, end_line_index=end_line_index, new_lines=new_lines)
 
 
 # Initialize message history
@@ -123,9 +121,10 @@ def llm_run(user_message, filename, function=UpdateFile()):
 
     if(not filename):
         return "Can't run Q, no file in the context."
-
+    function.setup(filename)
     file_content = open(filename, 'r').read()
-    content_with_line_numbers = "\n".join([f"{i+1}: {line}" for i, line in enumerate(file_content.splitlines())])
+    content_with_line_numbers = "\n".join([f"{i+1}: {line.rstrip()}" for i, line in enumerate(file_content.splitlines())])
+
     if(len(content_with_line_numbers) > 30000):
         return "File too large to process. Please select a smaller file."
 
@@ -178,13 +177,13 @@ def llm_run(user_message, filename, function=UpdateFile()):
                 if(args):
                     function_args_json += args
                     if(function_name == function.name):
-                        function.call(filename=filename, partial_json=function_args_json, finished=False)
+                        function.call(partial_json=function_args_json, finished=False)
         except Exception as e:
             print(event)
             print(e)
 
     if(function_args_json):
-        function.call(filename=filename, partial_json=function_args_json, finished=True)
+        function.call(partial_json=function_args_json, finished=True)
 
     if(text):
         message_history.append({"role": "assistant", "content": text})
