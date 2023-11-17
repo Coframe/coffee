@@ -21,12 +21,13 @@ class AI:
 
     def write_code(self, prompt):
         message=[{"role": "user", "content": prompt}]
+        print('sending request to', self.model_name)
         response = client.chat.completions.create(messages=message,
             stream=False,
             model=self.model_name,
             max_tokens=self.max_tokens,
             temperature=self.temperature)
-
+        print('got response from', self.model_name)
         content = response.choices[0].message.content
         if content.startswith("INSTRUCTIONS:"):
             return ("INSTRUCTIONS:","",content[14:])

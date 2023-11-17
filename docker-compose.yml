@@ -1,22 +1,23 @@
 version: '3.8'
 
 services:
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    volumes:
-      - './frontend:/app'
-      - '/app/node_modules'
-    ports:
-      - 3087:3087
+  # frontend:
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #     - './frontend:/app'
+  #     - '/app/node_modules'
+  #   ports:
+  #     - 3087:3087
   backend:
     build:
       context: ./coffee/maker
       dockerfile: Dockerfile
     volumes:
       - './coffee/maker:/app'
-      - './frontend:/frontend_dir'
+      # - './frontend:/frontend_dir'
+      - '../coframe/client:/frontend_dir'
     environment:
       - FRONTEND_DIR=/frontend_dir/
     env_file:

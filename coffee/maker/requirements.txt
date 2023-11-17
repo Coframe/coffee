@@ -4,3 +4,6 @@ fastapi
 langchain
 typer
 yaspin
+watchdog
+ijson
+pydantic
