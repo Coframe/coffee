@@ -15,7 +15,7 @@ def prompt_constructor(*args):
     return prompt
 
 def llm_run(prompt,waiting_message,success_message,globals):
-    
+
     output = ""
     with yaspin(text=waiting_message, spinner="dots") as spinner:
         output = globals.ai.run(prompt)
@@ -24,16 +24,16 @@ def llm_run(prompt,waiting_message,success_message,globals):
     if success_message:
         success_text = typer.style(success_message, fg=typer.colors.GREEN)
         typer.echo(success_text)
-    
+
     return output
 
 def llm_write_file(prompt,target_path,waiting_message,success_message,globals):
-    
+
     file_content = ""
-    with yaspin(text=waiting_message, spinner="dots") as spinner:
-        file_name,language,file_content = globals.ai.write_code(prompt)[0]
-        spinner.ok("✅ ")
-    
+    # with yaspin(text=waiting_message, spinner="dots") as spinner:
+    file_name,language,file_content = globals.ai.write_code(prompt)[0]
+        # spinner.ok("✅ ")
+
     if file_name=="INSTRUCTIONS:":
         return "INSTRUCTIONS:","",file_content
 
@@ -50,11 +50,11 @@ def llm_write_file(prompt,target_path,waiting_message,success_message,globals):
     else:
         success_text = typer.style(f"Created {file_name} at {globals.frontend_dir}", fg=typer.colors.GREEN)
         typer.echo(success_text)
-    
+
     return file_name, language, file_content
 
 def llm_write_files(prompt,target_path,waiting_message,success_message,globals):
-    
+
     file_content = ""
     with yaspin(text=waiting_message, spinner="dots") as spinner:
         results = globals.ai.write_code(prompt)
@@ -76,7 +76,7 @@ def llm_write_files(prompt,target_path,waiting_message,success_message,globals):
     if success_message:
         success_text = typer.style(success_message, fg=typer.colors.GREEN)
         typer.echo(success_text)
-    
+
     return results
 
 def load_templates_from_directory(directory_path):
@@ -89,9 +89,9 @@ def load_templates_from_directory(directory_path):
 
 def parse_code_string(code_string):
     sections = code_string.split('---')
-    
+
     pattern = re.compile(r'^(.+)\n```(.+?)\n(.*?)\n```', re.DOTALL)
-    
+
     code_triples = []
 
     for section in sections:
@@ -99,7 +99,7 @@ def parse_code_string(code_string):
         if match:
             filename, language, code = match.groups()
             code_triples.append((section.split("\n```")[0], language.strip(), code.strip()))
-    
+
     return code_triples
 
 def read_gitignore(path):
@@ -120,7 +120,7 @@ def is_ignored(entry, gitignore_patterns):
     return False
 
 def build_directory_structure(path='.', indent='', is_last=True, parent_prefix='', is_root=True):
-    
+
     gitignore_patterns = read_gitignore(path) + [".gitignore"] if indent == '' else []
 
     base_name = os.path.basename(path)
@@ -157,7 +157,7 @@ def construct_relevant_files(files):
         content = file[1]
         ret += name+":\n\n" + "```\n"+content+"\n```\n\n"
     return ret
-            
+
 def write_to_memory(filename,content):
     with open('memory/'+filename, 'a+') as file:
         for item in content:

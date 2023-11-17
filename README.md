@@ -9,26 +9,14 @@ https://private-user-images.githubusercontent.com/25165841/280459550-e8c1ee7e-68
 App is rendered out on the frontend. On top of this frontend is the coframe copilot, which is like the editor. As you prompt, the page updates in realtime. You can select parts of the page to refine. It should output some type of organization for API consumption expectation, and create a system for mocks where it expects APIs to come from. It should know how to route to different parts of the filesystem based on how we prompt it.
 
 ### How to run
-1. Install requirements (`pip3 install -r requirements.txt` in `coffee/maker/app`, `npm install` in `frontend`)
-
-2. In `frontend` (exposes port 3087):
-
-```bash
-npm run dev
 ```
-
-3. In `coffee/maker/app` (exposes port 8000):
-
-```bash
-uvicorn main:app --reload
+docker-compose build
+docker-compose up
 ```
+4. Install chrome extension from the `coffee/extension` folder.
 
 
-4. Install chrome extension from the `coffee/extension` folder. 
-
-Todo: Dockerize, clean up.
-
-Arch: 
+Arch:
 
 - Default boilerplate next app with hot reload.
 - Separate python service that’s modifying the FE app and contains the prompts.

@@ -1,1 +1,6 @@
 openai
+uvicorn
+fastapi
+langchain
+typer
+yaspin
