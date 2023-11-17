@@ -3,12 +3,11 @@
     "name": "Coffee",
     "version": "1.0",
     "permissions": [
-      "http://localhost:8000/",
-      "http://localhost:3087/"
+      "http://localhost:*/"
     ],
     "content_scripts": [
       {
-        "matches": ["http://localhost:3087/*"],
+        "matches": ["http://localhost:*/*"],
         "js": ["content.js"]
       }
     ],

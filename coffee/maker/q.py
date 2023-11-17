@@ -8,27 +8,22 @@ import os
 client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
 
-
-
 class StreamFunction:
     # It's a function that can to be execute as LLM generates structured output
-
     def __init__(self, name, description):
         self.name = name
         self.description = description
 
-    def schema(self) -> Dict[str, Any]:
+    def openai_schema(self) -> Dict[str, Any]:
         raise NotImplementedError("Schema method should be implemented in child classes")
 
-    def parse_json(partial_json) -> Any:
-        raise NotImplementedError("Parse_json method should be implemented in child classes")
-
-    def stream(self, **kwargs) -> callable:
+    def call(self, partial_json=None, finished=True, **kwargs) -> Any:
         raise NotImplementedError("Execute method should be implemented in child classes")
 
 class UpdateFile(StreamFunction):
     def __init__(self):
         super().__init__("update_file", "Update file content")
+        self.lines = None
 
     def openai_schema(self):
         return {
@@ -44,6 +39,41 @@ class UpdateFile(StreamFunction):
                 "required": ["insert_after_index", "clear_before_index" "new_lines"]
             }
         }
+
+
+
+    def call(self, partial_json=None, finished=True, filename=None):
+        if(not filename or not partial_json):
+            return None
+
+        print('Updating filename:', filename)
+        if(not self.lines):
+            with open(filename, 'r') as f:
+                self.lines = f.readlines()
+
+        parsed_args = self.parse_json(partial_json)
+
+        insert_after_index = parsed_args["insert_after_index"]
+        clear_before_index = parsed_args["clear_before_index"]
+        new_lines = parsed_args["new_lines"]
+
+        new_lines = [line for item in new_lines for line in item.split('\n')]
+        clear_before_index = clear_before_index or insert_after_index
+
+        if not finished:
+            print(new_lines)
+
+        if finished:
+            updated_lines = (
+                self.lines[:insert_after_index-1] +
+                [l.rstrip() + '\n' for l in new_lines] +  # Add new lines
+                self.lines[clear_before_index:]
+            )
+
+            # Write the updated content back to the file
+            with open(filename, 'w') as f:
+                f.writelines(updated_lines)
+
 
     def parse_json(self, partial_json):
         parser = ijson.parse(partial_json)
@@ -64,46 +94,6 @@ class UpdateFile(StreamFunction):
             pass
 
         return dict(insert_after_index=insert_after_index, clear_before_index=clear_before_index, new_lines=new_lines)
-
-    def stream(self, filename=None, insert_after_index=None, clear_before_index=None, **kwargs):
-        if(not filename):
-            return None
-
-        print('Updating filename:', filename)
-        # Open the file once to get the current content
-        with open(filename, 'r') as f:
-            lines = f.readlines()
-
-        # insert_after_index = max(1, insert_after_index)
-        # clear_before_index = min(len(lines), clear_before_index)
-        # print("\n".join([f"{i+1}: {lines[i].rstrip()}" for i in range(insert_after_index, clear_before_index)]))
-
-        def apply_update(new_lines=None, insert_after_index=None, clear_before_index=None, final=False, **kwargs):
-            # if new lines have \n in them, we split them into multiple lines
-            new_lines = [line for item in new_lines for line in item.split('\n')]
-            clear_before_index = clear_before_index or insert_after_index
-
-            if not final:
-                print("\n".join([f"{i+1}: {lines[i].rstrip()}" for i in range(insert_after_index, clear_before_index)]))
-                print("\n".join(new_lines))
-                # updated_lines = (
-                #     lines[:insert_after_index-1] +
-                #     ['#' + l.rstrip() + '\n' for l in new_lines] +  # Add new lines, but comment them out for now
-                #     lines[insert_after_index-1:clear_before_index] + # keep original lines
-                #     lines[clear_before_index:]
-                # )
-            else:
-                updated_lines = (
-                    lines[:insert_after_index-1] +
-                    [l.rstrip() + '\n' for l in new_lines] +  # Add new lines
-                    lines[clear_before_index:]
-                )
-
-                # Write the updated content back to the file
-                with open(filename, 'w') as f:
-                    f.writelines(updated_lines)
-
-        return apply_update
 
 
 # Initialize message history
@@ -165,7 +155,6 @@ def llm_run(user_message, filename, function=UpdateFile()):
     text = ""
     function_name = ""
     function_args_json = ""
-    function_stream = None
 
     print('Streaming response....')
     for event in response:
@@ -189,20 +178,13 @@ def llm_run(user_message, filename, function=UpdateFile()):
                 if(args):
                     function_args_json += args
                     if(function_name == function.name):
-                        parsed_args = function.parse_json(function_args_json)
-                        if (not function_stream):
-                            function_stream = function.stream(filename, **parsed_args)
-                        else:
-                            function_stream(**parsed_args)
-                    else:
-                        print(f"Uknown Function `{function_name}` called")
+                        function.call(filename=filename, partial_json=function_args_json, finished=False)
         except Exception as e:
             print(event)
             print(e)
 
-    if(function_stream):
-        parsed_args = function.parse_json(function_args_json)
-        function_stream(**parsed_args, final=True)
+    if(function_args_json):
+        function.call(filename=filename, partial_json=function_args_json, finished=True)
 
     if(text):
         message_history.append({"role": "assistant", "content": text})
