@@ -15,7 +15,7 @@ div.style.cursor = 'move';
 
 // Add your interface to the div
 div.innerHTML = `
-  <input id="myExtensionInput" type="text" style="width: 100%; padding: 5px; box-sizing: border-box;">
+  <input id="myExtensionInput" type="text" style="width: 100%; padding: 5px; box-sizing: border-box; color: black;">
   <button id="myExtensionButton" style="float:right; padding: 5px; margin-top: 5px; border: none; border-radius: 5px; cursor: pointer; background-color: #0076FF; color: #fff; text-align: right;">Update ✨</button>
   <div id="loading" style="display: none; color: white; animation: pulse 1s infinite;">
   ✨ Making magic<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span>
@@ -63,7 +63,7 @@ document.body.appendChild(div);
 // Add an event listener to the button
 document.getElementById('myExtensionButton').addEventListener('click', function() {
   var inputText = document.getElementById('myExtensionInput').value;
-  
+
   // Show the loading animation
   document.getElementById('loading').style.display = 'block';
 
