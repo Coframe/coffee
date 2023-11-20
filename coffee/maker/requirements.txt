@@ -2,5 +2,7 @@ openai
 uvicorn
 fastapi
 langchain
+langchain-experimental
 typer
 yaspin
+tiktoken
