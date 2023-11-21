@@ -152,7 +152,7 @@ def get_agent(root_dir):
 
     agent = AutoGPT.from_llm_and_tools(
         ai_name="Coffee",
-        ai_role=f"Expert Web Developer, working in directory {toolkit.root_dir}",
+        ai_role=f"Expert Web Developer, working in directory {toolkit.root_dir}. All path are relative to this path.",
         tools=tools,
         llm=ChatOpenAI(temperature=0.7, model="gpt-4-1106-preview",
                        model_kwargs={"response_format": {"type": "json_object"}}),
