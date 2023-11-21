@@ -133,6 +133,21 @@ def get_prompt(tools: List[BaseTool]) -> str:
 
 
 class CustomPromptGenerator(PromptGenerator):
+    def __init__(self):
+        super().__init__()
+        self.response_format = {
+            "thoughts": {
+                "plan": "short bulleted\n- list that conveys\n- long-term plan"
+            },
+            "command": {
+                "name": "command name",
+                "args": {
+                    "arg name": "value",
+                },
+            }
+        }
+
+
     def generate_prompt_string(self) -> str:
         """Generate a prompt string.
 
@@ -140,6 +155,7 @@ class CustomPromptGenerator(PromptGenerator):
             str: The generated prompt string.
         """
         formatted_response_format = json.dumps(self.response_format, indent=4)
+
         prompt_string = (
             f"Constraints:\n{self._generate_numbered_list(self.constraints)}\n\n"
             f"Commands:\n"

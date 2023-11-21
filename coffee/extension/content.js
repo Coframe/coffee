@@ -5,22 +5,29 @@
       loading: false,
       selectionMode: true,
       currentElement: null,
+      status: null,
 
       setConsoleErrors(newErrors) {
           this.consoleErrors = newErrors;
-          SendErrorsButton().style.display = newErrors.length > 0 ? 'block' : 'none';
+          if(SendErrorsButton())
+            SendErrorsButton().style.display = newErrors.length > 0 ? 'block' : 'none';
       },
 
       setLoading(loading) {
           this.loading = loading;
-          LoadingIndicator().style.display = loading ? 'block' : 'none';
+          if(LoadingIndicator())
+            LoadingIndicator().style.display = loading ? 'block' : 'none';
       },
 
       setSelectionMode(newSelectionMode) {
           this.selectionMode = newSelectionMode;
-          ToogleSelectionModeButton().style.backgroundColor = newSelectionMode ? '#0076FF' : '#ffffff1a';
-          SelectedDomPreview().style.opacity = newSelectionMode ? 1 : 0.0;
-          this.currentElement && this.setCurrentElement(null);
+          if(ToogleSelectionModeButton())
+            ToogleSelectionModeButton().style.backgroundColor = newSelectionMode ? '#0076FF' : '#ffffff1a';
+
+          if(SelectedDomPreview())
+            SelectedDomPreview().style.opacity = newSelectionMode ? 1 : 0.0;
+
+            this.currentElement && this.setCurrentElement(null);
           document.body.classList.toggle('selection-mode-active', newSelectionMode);
       },
 
@@ -30,8 +37,17 @@
           }
           this.currentElement = element;
           const previewText = element ? element.outerHTML : 'Press an element to modify it specifically';
-          SelectedDomPreview().innerText = previewText;
+          if(SelectedDomPreview())
+            SelectedDomPreview().innerText = previewText;
           element && element.classList.add('coffee-highlighted-class');
+      },
+
+      setStatus(status) {
+          this.status = status;
+          if(CoffeeStatus()){
+            CoffeeStatus().innerText = status;
+            CoffeeStatus().display = status ? 'block' : 'none';
+          }
       }
   };
 
@@ -55,6 +71,16 @@
         captureConsole('log');
         captureConsole('error');
         captureConsole('warn');
+
+        // Setup window.coffee
+        window.c = function(strings, ...values) {
+          window.postMessage({ type: "COFFEE_COMMAND", strings, values }, "*");
+          return "☕ Brewing...";
+        }
+        window.c.fix = function() {
+          window.postMessage({ type: "COFFEE_COMMAND", strings: ['fix'], values: [] }, "*");
+          return "☕ Brewing...";
+        }
       })();
     `;
       return script;
@@ -75,12 +101,14 @@
       <input id="CoffeeInput" type="text">
       <div id='CoffeeMeta'>
           <button id='CoffeeToggleSelectionMode'>🎯</button>
-          <div id="CoffeePreview">Press an element to modify it specifically</div>
+          <div id="CoffeePreview" class="CoffeeCode">Press an element to modify it specifically</div>
           <button id="CoffeeSendErrorsButton">🐞</button>
           <button id="CoffeeUpdateButton">Update ✨</button>
       </div>
       <div id="CoffeeLoadingIndicator">
-          <span class="CoffeePulse">✨</span> Making magic${loadingDots}
+          <span class="CoffeePulse">☕</span> Brewing${loadingDots}
+      </div>
+      <div id="CoffeeStatus" class="CoffeeCode">
       </div>
       <style>
           #coframeCoffeeDiv {
@@ -127,7 +155,7 @@
               background-color: #0076FF;
           }
 
-          #CoffeePreview {
+          .CoffeeCode {
             font-size: 12px;
             color: white;
             font-family: monospace;
@@ -135,6 +163,9 @@
             padding: 0 10px;
             background-color: rgba(255, 255, 255, 0.1);
             border-radius: 5px;
+          }
+
+          #CoffeePreview {
             overflow: auto;
             max-height: fit-content;
             line-height: 38px;
@@ -199,25 +230,40 @@
   async function postData(url = '', data = {}) {
       appState.setConsoleErrors([]);
       appState.setLoading(true);
+      appState.setStatus(null);
+
       try {
           const response = await fetch(url, {
               method: 'POST',
               headers: {
                   'Content-Type': 'application/json',
+                  'Accept': 'text/event-stream'
               },
               body: JSON.stringify(data),
           });
-          const json = await response.json();
+          // Handle streaming response
+          const reader = response.body.getReader();
+          while (true) {
+              const { value, done } = await reader.read();
+              if (done) break;
+              const text = new TextDecoder().decode(value);
+              const json_resp = JSON.parse(text);
+              const status = json_resp.status;
+              console.log('☕', status);
+              appState.setStatus(status);
+          }
+
           appState.setLoading(false);
-          return json;
+          return response;
       } catch (error) {
           console.log('Error generating:', error);
           appState.setLoading(false);
       }
   }
 
-  async function sendPrompt() {
-      var inputText = PromptInput().value;
+  async function sendPrompt(prompt) {
+      var inputText = prompt || PromptInput().value;
+
       let body = {
           text: inputText,
           html: appState.currentElement ? appState.currentElement.outerHTML : null,
@@ -270,13 +316,14 @@
   SendPromptButton = () => document.getElementById('CoffeeUpdateButton');
   PromptInput = () => document.getElementById('CoffeeInput');
   LoadingIndicator = () => document.getElementById('CoffeeLoadingIndicator');
+  CoffeeStatus = () => document.getElementById('CoffeeStatus');
 
   // Event Binding
   function bindEventListeners() {
       document.body.addEventListener('click', handleDomClick);
       SendErrorsButton().addEventListener('click', sendConsoleErrors);
       ToogleSelectionModeButton().addEventListener('click', () => appState.setSelectionMode(!appState.selectionMode));
-      SendPromptButton().addEventListener('click', sendPrompt);
+      SendPromptButton().addEventListener('click', ()=>sendPrompt());
       PromptInput().addEventListener('keypress', function(e) {
           if (e.key === 'Enter') {
               sendPrompt();
@@ -284,16 +331,24 @@
       });
       window.addEventListener("message", (event) => {
           if (event.source === window && event.data.type === "CONSOLE_CAPTURE") {
-              const {
-                  method,
-                  args
-              } = event.data;
-              if (method === 'error' || method === 'warn') {
-                  appState.setConsoleErrors([...appState.consoleErrors, {
-                      method,
-                      args
-                  }]);
-              }
+            const {
+              method,
+              args
+            } = event.data;
+            if (method === 'error' || method === 'warn') {
+              appState.setConsoleErrors([...appState.consoleErrors, {
+                method,
+                args
+              }]);
+            }
+          }
+          if(event.source === window && event.data.type === "COFFEE_COMMAND") {
+            const { strings, values } = event.data;
+            if (strings[0] === 'fix') {
+              sendConsoleErrors();
+            } else {
+              sendPrompt(strings.join(' '));
+            }
           }
       });
   }
@@ -311,4 +366,7 @@
   }
 
   initialize();
+
+
+  console.log('Coffee is ready to brew!');
 })();
