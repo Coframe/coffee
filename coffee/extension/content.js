@@ -63,11 +63,11 @@
   function createCoffeeUI() {
       const div = document.createElement('div');
       div.id = 'coframeCoffeeDiv';
-      div.innerHTML = getCoffeeUiHtml();
+      div.innerHTML = getCoffeeUIHtml();
       return div;
   }
 
-  function getCoffeeUiHtml() {
+  function getCoffeeUIHtml() {
       // Returns the inner HTML for the coffee UI
       const loadingDots = Array(3).fill('<span class="CoffeeLoadingDot">.</span>').join('');
 
