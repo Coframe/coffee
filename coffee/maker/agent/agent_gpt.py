@@ -24,7 +24,7 @@ from langchain_experimental.autonomous_agents.autogpt.prompt_generator import (
     FINISH_NAME,
 )
 from langchain_experimental.pydantic_v1 import ValidationError
-
+import json
 from agent.prompt import AutoGPTPrompt
 
 from agent.tools.file_managment.toolkit import FileManagementToolkit
@@ -86,6 +86,7 @@ class AutoGPT:
                 content=str(goals[0]) if len(goals) == 1 else "Goals:\n" + "- " + "\n- ".join(goals)
             )
         )
+
         user_input = (
             "Determine which next command to use to complete user queries, "
             "and respond using the format specified above:"
@@ -102,14 +103,20 @@ class AutoGPT:
                 messages=self.chat_history_memory.messages,
                 user_input=user_input,
             )
-
-            # Print Assistant thoughts
             print(assistant_reply)
+            try:
+                parsed_assistant_reply = json.loads(assistant_reply)
+                yield parsed_assistant_reply
+            except:
+                pass
+
+            # Assistant thoughts
             self.chat_history_memory.add_message(HumanMessage(content=user_input))
             self.chat_history_memory.add_message(AIMessage(content=assistant_reply))
 
             # Get command name and arguments
             action = self.output_parser.parse(assistant_reply)
+
             tools = {t.name: t for t in self.tools}
             if action.name == FINISH_NAME:
                 return action.args["response"]
