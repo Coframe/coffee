@@ -52,9 +52,6 @@ async def generate(prompt: Prompt):
             f"The content of the file is:\n" \
             f"{ReadFileTool(root_dir=os.environ.get('FRONTEND_DIR')).run(prompt.file)}"
 
-
-
-
     def stream():
           with get_openai_callback() as cb:
             for status in agent.run([task]):
@@ -74,7 +71,11 @@ async def handle_errors(errors:List[Error]):
     error_messages = '\n'.join([e.message for e in errors])
     task =  f"Browser logged errors: {error_messages}\n. Fix it."
     print(task)
-    with get_openai_callback() as cb:
-        agent.run([task])
-        print(cb)
-    return {"message": "Done"}
+    def stream():
+          with get_openai_callback() as cb:
+            for status in agent.run([task]):
+                yield json.dumps({"status": status.get("thoughts", {}).get("plan", "Working...")})
+            print(cb)
+            yield json.dumps({"status": f'Done. ${round(cb.total_cost, 2)}'})
+
+    return StreamingResponse(stream(), media_type="text/event-stream")
