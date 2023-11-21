@@ -35,14 +35,6 @@ class Prompt(BaseModel):
 
 agent = get_agent(os.environ.get("FRONTEND_DIR"))
 
-import time
-def my_computation(delay):
-    # Simulate processing and generating status strings
-    for i in range(5):
-        status = f"Status {i}"  # Generate a status string
-        yield dict(status=status)  # Pass the status string to the callback
-        time.sleep(delay)  # Simulating a delay
-
 @app.post("/prompt")
 async def generate(prompt: Prompt):
     prompt.file = prompt.file or "app/page.tsx"
