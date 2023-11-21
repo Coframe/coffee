@@ -105,10 +105,12 @@
             width: 100%;
             border: none;
           }
+
           #CoffeeMeta {
               display: flex;
               gap: 8px;
           }
+
           #CoffeeMeta button {
               height: 38px;
               margin-top: 10px;
@@ -120,9 +122,11 @@
               border-radius: 5px;
               box-sizing: border-box;
           }
+
           #CoffeeToggleSelectionMode {
               background-color: #0076FF;
           }
+
           #CoffeePreview {
             font-size: 12px;
             color: white;
@@ -135,10 +139,6 @@
             max-height: fit-content;
             line-height: 38px;
             white-space: nowrap;
-          }
-
-          #CoffeeSendErrorsButton {
-              /* specific styles for CoffeeSendErrorsButton */
           }
 
           #CoffeeMeta button#CoffeeUpdateButton {
@@ -237,7 +237,7 @@
       if (!appState.selectionMode || e.target.closest('#coframeCoffeeDiv')) {
           return;
       }
-      console.log('handleDomClick')
+
       if (e.target === appState.currentElement) {
           appState.setCurrentElement(null);
       } else {
