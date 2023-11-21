@@ -28,6 +28,7 @@ from langchain_experimental.pydantic_v1 import ValidationError
 from agent.prompt import AutoGPTPrompt
 
 from agent.tools.file_managment.toolkit import FileManagementToolkit
+from agent.tools.compile.compile_file import CompileFileTool
 
 
 class AutoGPT:
@@ -149,6 +150,7 @@ def get_agent(root_dir):
         root_dir=root_dir
     )
     tools += toolkit.get_tools()
+    # tools += [CompileFileTool(root_dir=root_dir)] - Compilation doesn't work yet
 
     agent = AutoGPT.from_llm_and_tools(
         ai_name="Coffee",
