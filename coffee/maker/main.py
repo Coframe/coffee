@@ -7,6 +7,8 @@ import os
 from typing import Optional, List
 from agent.tools.file_managment.read_file import ReadFileTool
 from agent.agent_gpt import get_agent
+from models.tiny import TinyAI, InputRequest
+from models.baseline_tiny import BaselineTinyAI
 import json
 
 
@@ -30,30 +32,40 @@ class Globals:
 class Prompt(BaseModel):
     text: str
     file: str = None
+    directory: str = None
     html: Optional[str] = None
 
-
 agent = get_agent(os.environ.get("FRONTEND_DIR"))
+tiny_ai = TinyAI()
+
 
 @app.post("/prompt")
-async def generate(prompt: Prompt):
+async def generate(prompt: Prompt, strategy: Optional[str] = "fast"):
+    prompt.directory = os.environ.get('FRONTEND_DIR')
     prompt.file = prompt.file or "app/page.tsx"
-    task =  f"User request: {prompt.text}\n" \
-            f"Currently user selected this element: {prompt.html}.\n" \
-            f"Currently user is looking at this file: {prompt.file}\n" \
-            f"The content of the file is:\n" \
-            f"{ReadFileTool(root_dir=os.environ.get('FRONTEND_DIR')).run(prompt.file)}"
+    file_content = ReadFileTool(root_dir=os.environ.get('FRONTEND_DIR')).run(prompt.file)
+
+    # task =  f"User request: {prompt.text}\n" \
+    #         f"Currently user selected this element: {prompt.html}.\n" \
+    #         f"Currently user is looking at this file: {prompt.file}\n" \
+    #         f"The content of the file is:\n" \
+    #         f"{file_content}"
+
+    # def stream():
+    #       with get_openai_callback() as cb:
+    #         for status in agent.run([task]):
+    #             yield json.dumps({"status": status.get("thoughts", {}).get("plan", "Working...")})
+    #         print(cb)
+    #         yield json.dumps({"status": f'Done. ${round(cb.total_cost, 2)}'})
 
     def stream():
-          with get_openai_callback() as cb:
-            for status in agent.run([task]):
-                yield json.dumps({"status": status.get("thoughts", {}).get("plan", "Working...")})
-            print(cb)
-            yield json.dumps({"status": f'Done. ${round(cb.total_cost, 2)}'})
-
+        yield json.dumps({"status": "Working..."})
+        input = InputRequest(user_query=prompt.text, sourcefile = prompt.directory+prompt.file, selected_element=prompt.html, file_content=file_content)
+        for status in tiny_ai.write_code(input):
+            yield json.dumps({"status": status})
+        yield json.dumps({"status": "Done."})
     return StreamingResponse(stream(), media_type="text/event-stream")
 
-    # return {"message": "Done"}
 
 class Error(BaseModel):
     message: str

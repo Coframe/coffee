@@ -6,3 +6,4 @@ langchain-experimental
 typer
 yaspin
 tiktoken
+jinja2
