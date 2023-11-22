@@ -261,12 +261,12 @@
       }
   }
 
-  async function sendPrompt(prompt) {
-      var inputText = prompt || PromptInput().value;
-
+  async function sendPrompt(prompt, options={}) {
+      console.log('Sending Prompt', prompt)
       let body = {
-          text: inputText,
+          text: prompt,
           html: appState.currentElement ? appState.currentElement.outerHTML : null,
+          ...options
       };
 
       try {
@@ -318,15 +318,26 @@
   LoadingIndicator = () => document.getElementById('CoffeeLoadingIndicator');
   CoffeeStatus = () => document.getElementById('CoffeeStatus');
 
+  function handlePromptSubmit(prompt){
+    prompt = prompt || PromptInput().value;
+    if(prompt.startsWith('/f')){
+      sendConsoleErrors();
+    } else if (prompt.startsWith('/a')) {
+      prompt = prompt.substring(2);
+      sendPrompt(prompt, {agent: 'auto_gpt'});
+    } else {
+      sendPrompt(prompt);
+    }
+  }
   // Event Binding
   function bindEventListeners() {
       document.body.addEventListener('click', handleDomClick);
       SendErrorsButton().addEventListener('click', sendConsoleErrors);
       ToogleSelectionModeButton().addEventListener('click', () => appState.setSelectionMode(!appState.selectionMode));
-      SendPromptButton().addEventListener('click', ()=>sendPrompt());
+      SendPromptButton().addEventListener('click', ()=>handlePromptSubmit());
       PromptInput().addEventListener('keypress', function(e) {
           if (e.key === 'Enter') {
-              sendPrompt();
+            handlePromptSubmit()
           }
       });
       window.addEventListener("message", (event) => {
@@ -344,11 +355,7 @@
           }
           if(event.source === window && event.data.type === "COFFEE_COMMAND") {
             const { strings, values } = event.data;
-            if (strings[0] === 'fix') {
-              sendConsoleErrors();
-            } else {
-              sendPrompt(strings.join(' '));
-            }
+            handlePromptSubmit(strings.join(''));
           }
       });
   }
