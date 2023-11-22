@@ -71,13 +71,6 @@ class TinyAI(BaseAI):
                 for message in self.apply_changes(inputs.sourcefile, inputs.file_content, changes):
                     yield message
 
-
-        # response = json.loads(full_response)
-        # print(response)
-
-        # for message in self.apply_changes(inputs.sourcefile, inputs.file_content, response["changes"]):
-        #     yield message
-
         return Response(file_name=inputs.sourcefile, file_content=inputs.file_content)
 
     def apply_changes(self, sourcefile, original_content, changes):
