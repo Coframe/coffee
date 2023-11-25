@@ -72,15 +72,27 @@
 
   // Create UI components
   function createCoffeeUI() {
-    const div = document.createElement('div');
-    div.id = 'coframeCoffeeUI';
+    const canvas = document.createElement('div');
+    canvas.id = 'CoffeeCanvas';
 
     // Using textarea instead of input for multi-line support
-    div.innerHTML = `
-      <textarea id="CoffeeInput" rows="1"></textarea>
-      <div id="CoffeeOutput"></div>
+    canvas.innerHTML = `
+      <div id="CoffeeUI">
+        <textarea id="CoffeeInput" rows="1"></textarea>
+        <div id="CoffeeOutput"></div>
+      </div>
+
       <style>
-        #coframeCoffeeUI {
+        #CoffeeCanvas {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100vw;
+          height: 100vh;
+          z-index: 100000;
+        }
+
+        #CoffeeUI {
           display: none;
           position: fixed;
           background: rgba(10, 10, 10, 0.8);
@@ -109,9 +121,8 @@
         }
       </style>
     `;
-    document.body.appendChild(div); // Append the div to the body here
 
-    return div;
+    return canvas;
   }
 
 
@@ -183,6 +194,20 @@
       }
   }
 
+
+  function handlePromptSubmit(prompt){
+    prompt = prompt || CoffeeInput().value;
+    if(prompt.startsWith('/f')){
+      sendConsoleErrors();
+    } else if (prompt.startsWith('/a')) {
+      prompt = prompt.substring(2);
+      sendPrompt(prompt, {agent: 'auto_gpt'});
+    } else {
+      sendPrompt(prompt);
+    }
+  }
+
+
   function handleCanvasClick(e) {
     elements = document.elementsFromPoint(e.clientX, e.clientY)
 
@@ -199,22 +224,7 @@
     }
   }
 
-  function createCanvas() {
-    // Create a container div to hold all overlays
-    const overlayContainer = document.createElement('div');
-    overlayContainer.id = 'coffeeCanvas';
-    overlayContainer.style.position = 'fixed';
-    overlayContainer.style.top = '0';
-    overlayContainer.style.left = '0';
-    overlayContainer.style.width = '100vw';
-    overlayContainer.style.height = '100vh';
-    overlayContainer.style.zIndex = '100000';
-
-    return overlayContainer;
-  }
-
   function drawElementOverlay(rect) {
-    console.log('drawElementOverlay');
     const canvas = Canvas()
 
     // Clear previous #coffeeElementOverlay if any
@@ -226,13 +236,15 @@
     // Create a new overlay div to represent the rectangle
     const overlay = document.createElement('div');
     overlay.id = 'coffeeElementOverlay';
-    overlay.style.position = 'absolute';
-    overlay.style.border = '2px solid rgb(172, 207, 253)';
-    overlay.style.left = `${rect.left}px`;
-    overlay.style.top = `${rect.top}px`;
-    overlay.style.width = `${rect.width}px`;
-    overlay.style.height = `${rect.height}px`;
-    overlay.style.pointerEvents = 'none'; // Make sure the overlay doesn't capture clicks
+    Object.assign(overlay.style, {
+      position: 'absolute',
+      border: '2px solid rgb(172, 207, 253)',
+      left: `${rect.left}px`,
+      top: `${rect.top}px`,
+      width: `${rect.width}px`,
+      height: `${rect.height}px`,
+      pointerEvents: 'none'
+    });
 
     // Append the overlay div to the container
     canvas.appendChild(overlay);
@@ -265,21 +277,8 @@
   };
 
 
-  function handlePromptSubmit(prompt){
-    prompt = prompt || CoffeeInput().value;
-    if(prompt.startsWith('/f')){
-      sendConsoleErrors();
-    } else if (prompt.startsWith('/a')) {
-      prompt = prompt.substring(2);
-      sendPrompt(prompt, {agent: 'auto_gpt'});
-    } else {
-      sendPrompt(prompt);
-    }
-  }
-
-
-  Canvas = () => document.getElementById('coffeeCanvas');
-  CoffeeUI = () => document.getElementById('coframeCoffeeUI');
+  Canvas = () => document.getElementById('CoffeeCanvas');
+  CoffeeUI = () => document.getElementById('CoffeeUI');
   CoffeeInput = () => document.getElementById('CoffeeInput');
   CoffeeOutput = () => document.getElementById('CoffeeOutput');
 
@@ -324,10 +323,7 @@
 
   // Initialize
   function initialize() {
-      canvas = createCanvas();
-      ui = createCoffeeUI();
-      canvas.appendChild(ui);
-      document.body.appendChild(canvas);
+      document.body.appendChild(createCoffeeUI());
       const logger = createConsoleLogger();
       (document.head || document.documentElement).appendChild(logger);
       bindEventListeners();
