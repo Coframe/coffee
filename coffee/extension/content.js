@@ -1,57 +1,40 @@
 (function() {
-  // Define application state and operations
   const appState = {
       consoleErrors: [],
       loading: false,
-      selectionMode: true,
       currentElement: null,
       status: null,
 
       setConsoleErrors(newErrors) {
           this.consoleErrors = newErrors;
-          if(SendErrorsButton())
-            SendErrorsButton().style.display = newErrors.length > 0 ? 'block' : 'none';
       },
 
       setLoading(loading) {
           this.loading = loading;
-          if(LoadingIndicator())
-            LoadingIndicator().style.display = loading ? 'block' : 'none';
-      },
-
-      setSelectionMode(newSelectionMode) {
-          this.selectionMode = newSelectionMode;
-          if(ToogleSelectionModeButton())
-            ToogleSelectionModeButton().style.backgroundColor = newSelectionMode ? '#0076FF' : '#ffffff1a';
-
-          if(SelectedDomPreview())
-            SelectedDomPreview().style.opacity = newSelectionMode ? 1 : 0.0;
-
-            this.currentElement && this.setCurrentElement(null);
-          document.body.classList.toggle('selection-mode-active', newSelectionMode);
-      },
-
-      setCurrentElement(element) {
-          if (this.currentElement) {
-              this.currentElement.classList.remove('coffee-highlighted-class');
+          if(CoffeeInput()) {
+            CoffeeInput().style.display = loading ? 'none' : 'block';
+            CoffeeInput().select();
           }
+
+          this.setStatus(null);
+      },
+      setCurrentElement(element, options={}) {
           this.currentElement = element;
-          const previewText = element ? element.outerHTML : 'Press an element to modify it specifically';
-          if(SelectedDomPreview())
-            SelectedDomPreview().innerText = previewText;
-          element && element.classList.add('coffee-highlighted-class');
+          rect = element?.getBoundingClientRect();
+          drawElementOverlay(rect);
+          showCommentOverlay(options.point);
       },
 
       setStatus(status) {
           this.status = status;
-          if(CoffeeStatus()){
-            CoffeeStatus().innerText = status;
-            CoffeeStatus().display = status ? 'block' : 'none';
+          if(CoffeeOutput()){
+            CoffeeOutput().innerText = status;
+            CoffeeOutput().style.display = status ? 'block' : 'none';
           }
       }
   };
 
-  // Create Logger
+  // Listens for console logs, to fix bugs and warnings
   createConsoleLogger = () => {
       const script = document.createElement('script');
       script.textContent = `
@@ -85,144 +68,59 @@
     `;
       return script;
   }
+
   // Create UI components
   function createCoffeeUI() {
-      const div = document.createElement('div');
-      div.id = 'coframeCoffeeDiv';
-      div.innerHTML = getCoffeeUIHtml();
-      return div;
-  }
+    const canvas = document.createElement('div');
+    canvas.id = 'CoffeeCanvas';
 
-  function getCoffeeUIHtml() {
-      // Returns the inner HTML for the coffee UI
-      const loadingDots = Array(3).fill('<span class="CoffeeLoadingDot">.</span>').join('');
+    canvas.innerHTML = `
+      <div id="CoffeeUI">
+        <textarea id="CoffeeInput" rows="1"></textarea>
+        <div id="CoffeeOutput"></div>
+      </div>
 
-      return `
-      <input id="CoffeeInput" type="text">
-      <div id='CoffeeMeta'>
-          <button id='CoffeeToggleSelectionMode'>🎯</button>
-          <div id="CoffeePreview" class="CoffeeCode">Press an element to modify it specifically</div>
-          <button id="CoffeeSendErrorsButton">🐞</button>
-          <button id="CoffeeUpdateButton">Update ✨</button>
-      </div>
-      <div id="CoffeeLoadingIndicator">
-          <span class="CoffeePulse">☕</span> Brewing${loadingDots}
-      </div>
-      <div id="CoffeeStatus" class="CoffeeCode">
-      </div>
       <style>
-          #coframeCoffeeDiv {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            z-index: 100000;
-            background: rgba(10, 10, 10, 0.8);
-            padding: 10px;
-            border-radius: 10px;
-            width: 450px;
-            backdrop-filter: blur(10px);
-            box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            cursor: move;
-          }
+        #CoffeeCanvas {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100vw;
+          height: 100vh;
+          z-index: 100000;
+        }
 
-          #CoffeeInput {
-            padding: 5px;
-            border-radius: 5px;
-            box-sizing: border-box;
-            width: 100%;
-            border: none;
-          }
+        #CoffeeUI {
+          display: none;
+          position: fixed;
+          background: rgba(10, 10, 10, 0.8);
+          border-radius: 10px;
+          overflow: hidden;
+          backdrop-filter: blur(10px);
+          box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.2);
+          z-index:1;
+          width: 200px;
+        }
 
-          #CoffeeMeta {
-              display: flex;
-              gap: 8px;
-          }
+        #CoffeeInput {
+          padding: 5px 10px;
+          border: none;
+          background: transparent;
+          color: white;
+          overflow-y: hidden; /* Prevent scrollbar */
+          resize: none; /* Disable resizing of the textarea */
+          outline: none;
+        }
 
-          #CoffeeMeta button {
-              height: 38px;
-              margin-top: 10px;
-              border: none;
-              cursor: pointer;
-              background-color: #2d2929;
-              color: #fff;
-              padding: 5px;
-              border-radius: 5px;
-              box-sizing: border-box;
-          }
-
-          #CoffeeToggleSelectionMode {
-              background-color: #0076FF;
-          }
-
-          .CoffeeCode {
-            font-size: 12px;
-            color: white;
-            font-family: monospace;
-            margin-top: 10px;
-            padding: 0 10px;
-            background-color: rgba(255, 255, 255, 0.1);
-            border-radius: 5px;
-          }
-
-          #CoffeePreview {
-            overflow: auto;
-            max-height: fit-content;
-            line-height: 38px;
-            white-space: nowrap;
-          }
-
-          #CoffeeMeta button#CoffeeUpdateButton {
-              float: right;
-              min-width: 90px;
-              background-color: #0076FF;
-              color: #fff;
-              text-align: right;
-          }
-          #CoffeeLoadingIndicator {
-              margin-top: 10px;
-              display: none;
-              color: white;
-          }
-
-          .CoffeeLoadingDot {
-            animation: dot 1s infinite;
-          }
-
-          .CoffeeLoadingDot:nth-child(2) {
-            animation-delay: 0.2s;
-          }
-
-          .CoffeeLoadingDot:nth-child(3) {
-            animation-delay: 0.4s;
-          }
-
-          @keyframes dot {
-            0%, 100% {
-              opacity: 0;
-            }
-            50% {
-              opacity: 1;
-            }
-          }
-
-          .CoffeePulse {
-            animation: pulse 1s infinite;
-          }
-
-          @keyframes pulse {
-            0% {
-              opacity: 1;
-            }
-            50% {
-              opacity: 0.7;
-            }
-            100% {
-              opacity: 1;
-            }
-          }
+        #CoffeeOutput {
+          display: none;
+          padding: 5px 10px;
+          color: white;
+        }
       </style>
-  `;
+    `;
+
+    return canvas;
   }
 
 
@@ -230,7 +128,7 @@
   async function postData(url = '', data = {}) {
       appState.setConsoleErrors([]);
       appState.setLoading(true);
-      appState.setStatus(null);
+      appState.setStatus("☕ Brewing...");
 
       try {
           const response = await fetch(url, {
@@ -241,7 +139,6 @@
               },
               body: JSON.stringify(data),
           });
-          // Handle streaming response
           const reader = response.body.getReader();
           while (true) {
               const { value, done } = await reader.read();
@@ -250,7 +147,7 @@
               const json_resp = JSON.parse(text);
               const status = json_resp.status;
               console.log('☕', status);
-              appState.setStatus(status);
+              appState.setStatus('☕ '+status);
           }
 
           appState.setLoading(false);
@@ -262,7 +159,7 @@
   }
 
   async function sendPrompt(prompt, options={}) {
-      console.log('Sending Prompt', prompt)
+      console.log('Sending Prompt', prompt, appState.currentElement)
       let body = {
           text: prompt,
           html: appState.currentElement ? appState.currentElement.outerHTML : null,
@@ -275,25 +172,10 @@
       } catch (error) {
           // ...
       }
-
-      PromptInput().value = '';
-  }
-
-  async function handleDomClick(e) {
-      if (!appState.selectionMode || e.target.closest('#coframeCoffeeDiv')) {
-          return;
-      }
-
-      if (e.target === appState.currentElement) {
-          appState.setCurrentElement(null);
-      } else {
-          appState.setCurrentElement(e.target);
-      }
   }
 
 
 
-  // Error Sending Function
   async function sendConsoleErrors() {
       if (appState.consoleErrors.length === 0) {
           return;
@@ -310,16 +192,8 @@
   }
 
 
-  ToogleSelectionModeButton = () => document.getElementById('CoffeeToggleSelectionMode');
-  SelectedDomPreview = () => document.getElementById('CoffeePreview');
-  SendErrorsButton = () => document.getElementById('CoffeeSendErrorsButton');
-  SendPromptButton = () => document.getElementById('CoffeeUpdateButton');
-  PromptInput = () => document.getElementById('CoffeeInput');
-  LoadingIndicator = () => document.getElementById('CoffeeLoadingIndicator');
-  CoffeeStatus = () => document.getElementById('CoffeeStatus');
-
   function handlePromptSubmit(prompt){
-    prompt = prompt || PromptInput().value;
+    prompt = prompt || CoffeeInput().value;
     if(prompt.startsWith('/f')){
       sendConsoleErrors();
     } else if (prompt.startsWith('/a')) {
@@ -329,17 +203,97 @@
       sendPrompt(prompt);
     }
   }
-  // Event Binding
+
+
+  function handleCanvasClick(e) {
+    elements = document.elementsFromPoint(e.clientX, e.clientY)
+
+    if(elements[0].id === Canvas().id) elements.shift();
+
+    if(Canvas().contains(elements[0])) return
+
+    if(appState.currentElement === elements[0]) {
+      appState.setCurrentElement(null);
+    } else {
+      appState.setCurrentElement(elements[0], {point: {x: e.clientX, y: e.clientY}});
+    }
+  }
+
+  function drawElementOverlay(rect) {
+    const canvas = Canvas()
+
+    const previousOverlay = canvas.querySelector('#coffeeElementOverlay');
+    if (previousOverlay) previousOverlay.remove();
+
+    if (!rect) return;
+
+
+    const overlay = document.createElement('div');
+    overlay.id = 'coffeeElementOverlay';
+    Object.assign(overlay.style, {
+      position: 'absolute',
+      border: '2px solid rgb(172, 207, 253)',
+      left: `${rect.left}px`,
+      top: `${rect.top}px`,
+      width: `${rect.width}px`,
+      height: `${rect.height}px`,
+      pointerEvents: 'none'
+    });
+
+
+    canvas.appendChild(overlay);
+  }
+
+  showCommentOverlay = (point) => {
+    const coffeeUI = CoffeeUI();
+    const coffeeInput = CoffeeInput();
+
+    if (point) {
+      coffeeUI.style.display = 'block';
+      coffeeUI.style.top = `${point.y - 10}px`;
+
+      const coffeeUIWidth = coffeeUI.offsetWidth;
+      const viewportWidth = window.innerWidth;
+
+      // Check if the CoffeeUI would go out of the viewport on the right side
+      if (point.x + coffeeUIWidth + 20 > viewportWidth) {
+        coffeeUI.style.left = `${point.x - coffeeUIWidth - 20}px`;
+      } else {
+        coffeeUI.style.left = `${point.x + 20}px`;
+      }
+
+      coffeeInput.focus();
+      coffeeInput.select();
+    } else {
+      coffeeUI.style.display = 'none';
+    }
+  };
+
+
+  Canvas = () => document.getElementById('CoffeeCanvas');
+  CoffeeUI = () => document.getElementById('CoffeeUI');
+  CoffeeInput = () => document.getElementById('CoffeeInput');
+  CoffeeOutput = () => document.getElementById('CoffeeOutput');
+
+
+
   function bindEventListeners() {
-      document.body.addEventListener('click', handleDomClick);
-      SendErrorsButton().addEventListener('click', sendConsoleErrors);
-      ToogleSelectionModeButton().addEventListener('click', () => appState.setSelectionMode(!appState.selectionMode));
-      SendPromptButton().addEventListener('click', ()=>handlePromptSubmit());
-      PromptInput().addEventListener('keypress', function(e) {
+      document.addEventListener('click', handleCanvasClick, true);
+
+      // Send prompt on enter
+      CoffeeInput().addEventListener('keypress', function(e) {
           if (e.key === 'Enter') {
             handlePromptSubmit()
+            e.preventDefault();
           }
       });
+
+      // Make sure the textarea grows with content
+      CoffeeInput().addEventListener('input', function() {
+        this.style.height = 'auto'; // Reset the height
+        this.style.height = (this.scrollHeight) + 'px'; // Set the height to scroll height
+      });
+
       window.addEventListener("message", (event) => {
           if (event.source === window && event.data.type === "CONSOLE_CAPTURE") {
             const {
@@ -360,20 +314,16 @@
       });
   }
 
-  // Initialize
+
   function initialize() {
-      const ui = createCoffeeUI();
-      document.body.appendChild(ui);
+      document.body.appendChild(createCoffeeUI());
       const logger = createConsoleLogger();
       (document.head || document.documentElement).appendChild(logger);
       bindEventListeners();
       appState.setConsoleErrors([]);
       appState.setLoading(false);
-      appState.setSelectionMode(true);
   }
 
   initialize();
-
-
-  console.log('Coffee is ready to brew!');
+  console.log('☕ Coffee is ready to brew!');
 })();
