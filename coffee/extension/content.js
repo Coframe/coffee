@@ -1,5 +1,4 @@
 (function() {
-  // Define application state and operations
   const appState = {
       consoleErrors: [],
       loading: false,
@@ -35,7 +34,7 @@
       }
   };
 
-  // Create Logger
+  // Listens for console logs, to fix bugs and warnings
   createConsoleLogger = () => {
       const script = document.createElement('script');
       script.textContent = `
@@ -75,7 +74,6 @@
     const canvas = document.createElement('div');
     canvas.id = 'CoffeeCanvas';
 
-    // Using textarea instead of input for multi-line support
     canvas.innerHTML = `
       <div id="CoffeeUI">
         <textarea id="CoffeeInput" rows="1"></textarea>
@@ -141,7 +139,6 @@
               },
               body: JSON.stringify(data),
           });
-          // Handle streaming response
           const reader = response.body.getReader();
           while (true) {
               const { value, done } = await reader.read();
@@ -178,7 +175,7 @@
   }
 
 
-  // Error Sending Function
+
   async function sendConsoleErrors() {
       if (appState.consoleErrors.length === 0) {
           return;
@@ -211,10 +208,8 @@
   function handleCanvasClick(e) {
     elements = document.elementsFromPoint(e.clientX, e.clientY)
 
-    // check if element is canvas itself
     if(elements[0].id === Canvas().id) elements.shift();
 
-    // check if element is withing canvas
     if(Canvas().contains(elements[0])) return
 
     if(appState.currentElement === elements[0]) {
@@ -227,13 +222,12 @@
   function drawElementOverlay(rect) {
     const canvas = Canvas()
 
-    // Clear previous #coffeeElementOverlay if any
     const previousOverlay = canvas.querySelector('#coffeeElementOverlay');
     if (previousOverlay) previousOverlay.remove();
 
     if (!rect) return;
 
-    // Create a new overlay div to represent the rectangle
+
     const overlay = document.createElement('div');
     overlay.id = 'coffeeElementOverlay';
     Object.assign(overlay.style, {
@@ -246,20 +240,20 @@
       pointerEvents: 'none'
     });
 
-    // Append the overlay div to the container
+
     canvas.appendChild(overlay);
   }
 
   showCommentOverlay = (point) => {
-    const coffeeUI = CoffeeUI(); // Assuming this is a function that returns your UI element
-    const coffeeInput = CoffeeInput(); // And this returns your input element
+    const coffeeUI = CoffeeUI();
+    const coffeeInput = CoffeeInput();
 
     if (point) {
       coffeeUI.style.display = 'block';
       coffeeUI.style.top = `${point.y - 10}px`;
 
-      const coffeeUIWidth = coffeeUI.offsetWidth; // Get the width of the CoffeeUI element
-      const viewportWidth = window.innerWidth; // Width of the viewport
+      const coffeeUIWidth = coffeeUI.offsetWidth;
+      const viewportWidth = window.innerWidth;
 
       // Check if the CoffeeUI would go out of the viewport on the right side
       if (point.x + coffeeUIWidth + 20 > viewportWidth) {
@@ -268,7 +262,6 @@
         coffeeUI.style.left = `${point.x + 20}px`;
       }
 
-      // Focus and select the text in the input
       coffeeInput.focus();
       coffeeInput.select();
     } else {
@@ -283,7 +276,7 @@
   CoffeeOutput = () => document.getElementById('CoffeeOutput');
 
 
-  // Event Binding
+
   function bindEventListeners() {
       document.addEventListener('click', handleCanvasClick, true);
 
@@ -321,7 +314,7 @@
       });
   }
 
-  // Initialize
+
   function initialize() {
       document.body.appendChild(createCoffeeUI());
       const logger = createConsoleLogger();
