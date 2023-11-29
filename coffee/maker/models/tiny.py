@@ -36,16 +36,16 @@ class TinyAI(BaseAI):
 
 
     def write_code(self, inputs: InputRequest) -> Response:
-        print('-------------------')
+        print('-------------------', inputs.source_file, '-------------------')
 
         prompt = self.prompt(**inputs.dict())
-        print(prompt)
+        print("\n".join(prompt.split("\n")[0:5]))
         self.conversation_history.append(
             {"role": "user", "content": prompt}
         )
 
         response_stream = client.chat.completions.create(
-            model="gpt-4-1106-preview",
+            model="gpt-3.5-turbo-1106", #"gpt-4-1106-preview",
             messages=self.conversation_history,
             response_format={"type": "json_object"},
             stream=True,
@@ -59,7 +59,7 @@ class TinyAI(BaseAI):
             delta = chunk.choices[0].delta.content
             if(delta == None):
                 continue
-            # print(delta, end="", flush=True)
+
             full_response+=delta
             new_line+=delta
             if("\n" in delta):
@@ -68,12 +68,12 @@ class TinyAI(BaseAI):
             changes = self.parse_partial_response(full_response)
             if(len(changes) > changes_length):
                 changes_length = len(changes)
-                for message in self.apply_changes(inputs.sourcefile, inputs.file_content, changes):
+                for message in self.apply_changes(inputs.source_file, inputs.file_content, changes):
                     yield message
 
-        return Response(file_name=inputs.sourcefile, file_content=inputs.file_content)
+        return Response(file_name=inputs.source_file, file_content=inputs.file_content)
 
-    def apply_changes(self, sourcefile, original_content, changes):
+    def apply_changes(self, source_file, original_content, changes):
         print('applying changes')
         new_content = original_content
 
@@ -94,9 +94,9 @@ class TinyAI(BaseAI):
             yield "Replacing "+str(start_index)+":"+str(end_index)
             new_content = new_content[:start_index]+"\n".join(change["new"])+new_content[end_index:]
 
-            with open(sourcefile, "w") as f:
+            with open(source_file, "w") as f:
                 f.write(new_content)
-                yield "Saved to "+sourcefile
+                yield "Saved to "+source_file
 
     def parse_partial_response(self, json_stream):
         # Initialize a parser for the JSON stream

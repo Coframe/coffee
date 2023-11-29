@@ -30,7 +30,7 @@ from agent.prompt import AutoGPTPrompt
 from agent.tools.file_managment.toolkit import FileManagementToolkit
 from agent.tools.compile.compile_file import CompileFileTool
 
-
+MAX_ITERNATIONS = 5
 class AutoGPT:
     """Agent class for interacting with Auto-GPT."""
 
@@ -96,6 +96,9 @@ class AutoGPT:
         while True:
             # Discontinue if continuous limit is reached
             loop_count += 1
+            if(loop_count > MAX_ITERNATIONS):
+                yield "Max iterations reached. Giving up..."
+                return
 
             # Send message to AI, get response
             assistant_reply = self.chain.run(
@@ -124,6 +127,8 @@ class AutoGPT:
                 tool = tools[action.name]
                 try:
                     observation = tool.run(action.args)
+                    if(action.args.get("file_path")):
+                        yield {"file_path": action.args.get("file_path")}
                 except ValidationError as e:
                     observation = (
                         f"Validation Error in args: {str(e)}, args: {action.args}"
@@ -163,7 +168,7 @@ def get_agent(root_dir):
         ai_name="Coffee",
         ai_role=f"Expert Web Developer, working in directory {toolkit.root_dir}. All path are relative to this path.",
         tools=tools,
-        llm=ChatOpenAI(temperature=0.7, model="gpt-4-1106-preview",
+        llm=ChatOpenAI(temperature=0.7, model="gpt-4-1106-preview", #gpt-3.5-turbo-1106
                        model_kwargs={"response_format": {"type": "json_object"}}),
     )
     agent.chain.verbose = False

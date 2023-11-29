@@ -1,0 +1,45 @@
+#!/bin/bash
+
+# Function to build the Docker image
+build_image() {
+    docker build -t ${IMAGE_NAME} ./coffee/maker
+    echo "Docker image ${IMAGE_NAME} built successfully."
+}
+
+# Define your Docker image name
+IMAGE_NAME="coffee"
+
+# Define the container name
+CONTAINER_NAME="coffee-maker"
+
+# Check for 'build' command
+if [ "$1" = "build" ]; then
+    build_image
+    exit 0
+fi
+
+# Check if an argument is provided for the frontend directory
+if [ -z "$1" ]; then
+    echo "Usage: $0 <frontend_directory>"
+    echo "       $0 build"
+    exit 1
+fi
+
+FRONTEND_DIR=$1
+
+# Stop the existing container if it is running
+docker stop ${CONTAINER_NAME} 2>/dev/null || true
+
+# Remove the existing container
+docker rm ${CONTAINER_NAME} 2>/dev/null || true
+
+# Run the Docker container
+docker run -it \
+    --env-file ./coffee/variables.env \
+    --name ${CONTAINER_NAME} \
+    -v "$(pwd)/coffee/maker:/app" \
+    -v "$(pwd)/${FRONTEND_DIR}:/frontend_dir" \
+    -p 8000:8000 \
+    ${IMAGE_NAME}
+
+echo "Container ${CONTAINER_NAME} started with frontend directory: ${FRONTEND_DIR}"

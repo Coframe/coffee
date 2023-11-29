@@ -6,7 +6,7 @@ Existing directory structure:
 {directory_structure}
 ```
 
-Current file, {sourcefile}:
+Current file, {source_file}:
 
 ```
 {file_content}

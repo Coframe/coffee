@@ -13,19 +13,21 @@ from langchain.tools.file_management.write import WriteFileTool
 
 from agent.tools.file_managment.edit_file import EditFileTool
 from agent.tools.file_managment.read_file import ReadFileTool
+from agent.tools.file_managment.grep import GrepTool
 
 _FILE_TOOLS = {
     # "Type[Runnable[Any, Any]]" has no attribute "__fields__"  [attr-defined]
     tool_cls.__fields__["name"].default: tool_cls  # type: ignore[attr-defined]
     for tool_cls in [
-        FileSearchTool,
-        ListDirectoryTool,
+        GrepTool,
+        # FileSearchTool,
+        # ListDirectoryTool,
         ReadFileTool,
         EditFileTool,
-        CopyFileTool,
-        DeleteFileTool,
-        MoveFileTool,
-        WriteFileTool,
+        # CopyFileTool,
+        # DeleteFileTool,
+        # MoveFileTool,
+        # WriteFileTool,
     ]
 }
 

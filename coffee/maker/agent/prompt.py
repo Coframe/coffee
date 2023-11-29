@@ -136,14 +136,14 @@ class CustomPromptGenerator(PromptGenerator):
     def __init__(self):
         super().__init__()
         self.response_format = {
-            "thoughts": {
-                "plan": "short bulleted\n- list that conveys\n- long-term plan"
-            },
+            # "thoughts": {
+            #     "plan": "- short bulleted\n- list that conveys\n- long-term plan"
+            # },
             "command": {
                 "name": "command name",
                 "args": {
                     "arg name": "value",
-                },
+                }
             }
         }
 

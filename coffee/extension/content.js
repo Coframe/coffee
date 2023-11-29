@@ -182,7 +182,7 @@
       }
 
       try {
-          const data = await postData('http://localhost:8000/errors', appState.consoleErrors.map(e => ({
+          const data = await postData('http://localhost:8000/fix_errors', appState.consoleErrors.map(e => ({
               message: e.args.join('\n')
           })));
           console.log('Console Errors sent', data);
