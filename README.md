@@ -9,10 +9,17 @@ https://private-user-images.githubusercontent.com/25165841/280459550-e8c1ee7e-68
 App is rendered out on the frontend. On top of this frontend is the coframe copilot, which is like the editor. As you prompt, the page updates in realtime. You can select parts of the page to refine. It should output some type of organization for API consumption expectation, and create a system for mocks where it expects APIs to come from. It should know how to route to different parts of the filesystem based on how we prompt it.
 
 ### How to run
+Demo Frontend:
 ```
-docker-compose build
-docker-compose up
+docker-compose build frontend
+docker-compose up frontend
 ```
+Actual server:
+```
+./bin/dev ./frontend/
+```
+
+
 4. Install chrome extension from the `coffee/extension` folder.
 
 

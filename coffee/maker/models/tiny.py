@@ -5,6 +5,8 @@ from models.base import BaseAI, InputRequest, Response
 from functools import lru_cache
 import jinja2
 import ijson
+import difflib
+import re
 
 client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
@@ -27,9 +29,9 @@ class TinyAI(BaseAI):
             Output json should have one or multiple replace statements.
 
             {"changes":[{
-            "original": "first line that should be replaced",
-            "new": ["new lines of code"],
-            "after":"next line that will be kept as is"
+            "original_line": "first line in snippet that should be deleted or replaced",
+            "new_lines": ["new lines of code"],
+            "next_line":"next line that will be kept as is"
             }, {}]}
         """, trim_blocks=True, lstrip_blocks=True, autoescape=False)
         return template.render(**kwargs)
@@ -39,10 +41,9 @@ class TinyAI(BaseAI):
         print('-------------------', inputs.source_file, '-------------------')
 
         prompt = self.prompt(**inputs.dict())
-        print("\n".join(prompt.split("\n")[0:5]))
-        self.conversation_history.append(
-            {"role": "user", "content": prompt}
-        )
+        print("\n".join(prompt.split("\n")[0:7]))
+        self.conversation_history = [{"role": "user", "content": prompt}]
+
 
         response_stream = client.chat.completions.create(
             model="gpt-3.5-turbo-1106", #"gpt-4-1106-preview",
@@ -59,7 +60,7 @@ class TinyAI(BaseAI):
             delta = chunk.choices[0].delta.content
             if(delta == None):
                 continue
-
+            print(delta, end="", flush=True)
             full_response+=delta
             new_line+=delta
             if("\n" in delta):
@@ -75,27 +76,39 @@ class TinyAI(BaseAI):
 
     def apply_changes(self, source_file, original_content, changes):
         print('applying changes')
-        new_content = original_content
+        new_content = original_content.split("\n")
 
         for change in changes:
-            first_line = change["original"]
-            last_line = change["after"]
-            start_index = new_content.find(first_line)
+            first_line = change["original_line"]
+            last_line = change["next_line"]
+            start_index = self.find_line_index(new_content,first_line)
             if(start_index == -1):
-                print("WARNING: Cannot find", first_line)
-                yield "WARNING: Cannot find "+first_line
+                print("WARNING: Cannot find first line", first_line)
+                yield "WARNING: Cannot find first line"+first_line
                 continue
-            end_index = start_index+new_content[start_index:].find(last_line)
+            end_index = self.find_line_index(new_content[start_index:], last_line)
             if(end_index == -1):
-                print("WARNING: Cannot find", last_line)
-                yield "WARNING: Cannot find "+last_line
+                print("WARNING: Cannot find last line", last_line)
+                yield "WARNING: Cannot find last line"+last_line
                 continue
+
+            end_index += start_index
+
+            # start_line = new_content[start_index]
+            # indentation = re.match(r"^\s*", start_line).group(0)
+            new_lines = change["new_lines"]
+
             print("Replacing", start_index, end_index)
-            yield "Replacing "+str(start_index)+":"+str(end_index)
-            new_content = new_content[:start_index]+"\n".join(change["new"])+new_content[end_index:]
+            print("<<<<<< Original")
+            print('\n'.join(new_content[start_index:end_index]))
+            print("======")
+            print('\n'.join(new_lines))
+            print(">>>>>> New")
+
+            new_content = new_content[:start_index]+new_lines+new_content[end_index:]
 
             with open(source_file, "w") as f:
-                f.write(new_content)
+                f.write("\n".join(new_content))
                 yield "Saved to "+source_file
 
     def parse_partial_response(self, json_stream):
@@ -107,14 +120,14 @@ class TinyAI(BaseAI):
         try:
             current_change = {}
             for prefix, event, value in parser:
-                if prefix.endswith('.original') and event == 'string':
-                    current_change['original'] = value
-                elif prefix.endswith('.new.item') and event == 'string':
-                    if 'new' not in current_change:
-                        current_change['new'] = []
-                    current_change['new'].append(value)
-                elif prefix.endswith('.after') and event == 'string':
-                    current_change['after'] = value
+                if prefix.endswith('.original_line') and event == 'string':
+                    current_change['original_line'] = value
+                    if 'new_lines' not in current_change:
+                        current_change['new_lines'] = []
+                elif prefix.endswith('.new_lines.item') and event == 'string':
+                    current_change['new_lines'].append(value)
+                elif prefix.endswith('.next_line') and event == 'string':
+                    current_change['next_line'] = value
                     # Once a complete change is parsed, add it to the list and reset for the next change
                     changes.append(current_change)
                     current_change = {}
@@ -123,4 +136,17 @@ class TinyAI(BaseAI):
             pass  # Handle incomplete JSON, perhaps logging a warning
 
         return changes
+
+    def find_line_index(self, lines, target, threshold=0.99):
+        for index, line in enumerate(lines):
+            if target in line:
+                print("Found exact line:", target, line)
+                return index
+
+            similarity = difflib.SequenceMatcher(None, target.strip(), line.strip()).ratio()
+            if similarity >= threshold:
+                print("Found similar line:", similarity, target, line)
+                return index  # Return the index of the first similar enough line
+
+        return -1  # No line was similar enough
 
