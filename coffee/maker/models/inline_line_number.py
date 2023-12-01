@@ -11,10 +11,7 @@ from config import HIERARCHY, GUIDELINES, MODIFY_FILE, WRITE_CODE, SINGLEFILE
 
 client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
-system = """Your are an expert in frontend development. Your task is to change the website INLINE based on users query.
-You will be given a json input with 2 fields:
-- website_code: in .tsx format with added line numbers
-- user_query: user request
+system = """Your are an expert in frontend development. Your task is to change the website based on users query.
 
 Your task is to response with inline edit:
 - start_line: int - Insert new lines starting with this index (including).
@@ -91,7 +88,7 @@ class InlineLineNumberAI(BaseAI):
             num_iterations += 1
 
         return Response(
-            file_name=inputs.sourcefile,
+            file_name=inputs.source_file,
             file_content=file_content
         )
 

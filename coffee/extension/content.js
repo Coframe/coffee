@@ -15,8 +15,6 @@
             CoffeeInput().style.display = loading ? 'none' : 'block';
             CoffeeInput().select();
           }
-
-          this.setStatus(null);
       },
       setCurrentElement(element, options={}) {
           this.currentElement = element;
@@ -153,7 +151,7 @@
           appState.setLoading(false);
           return response;
       } catch (error) {
-          console.log('Error generating:', error);
+          console.error('Error generating:', error);
           appState.setLoading(false);
       }
   }
@@ -182,7 +180,7 @@
       }
 
       try {
-          const data = await postData('http://localhost:8000/errors', appState.consoleErrors.map(e => ({
+          const data = await postData('http://localhost:8000/fix_errors', appState.consoleErrors.map(e => ({
               message: e.args.join('\n')
           })));
           console.log('Console Errors sent', data);
@@ -196,9 +194,6 @@
     prompt = prompt || CoffeeInput().value;
     if(prompt.startsWith('/f')){
       sendConsoleErrors();
-    } else if (prompt.startsWith('/a')) {
-      prompt = prompt.substring(2);
-      sendPrompt(prompt, {agent: 'auto_gpt'});
     } else {
       sendPrompt(prompt);
     }

@@ -60,6 +60,6 @@ class InlineAI(BaseAI):
         for update in updates:
             new_code = new_code.replace(update["original_code"], update["updated_code"])
         return Response(
-            file_name=inputs.sourcefile,
+            file_name=inputs.source_file,
             file_content=new_code
         )

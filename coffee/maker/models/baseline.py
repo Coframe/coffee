@@ -35,7 +35,7 @@ class BaselineAI(BaseAI):
 
         prompt = write_code_template.format(
             prompt=inputs.user_query,
-            sourcefile=inputs.sourcefile,
+            source_file=inputs.source_file,
             file_content=inputs.file_content,
             directory_structure=inputs.directory_structure,
             guidelines=GUIDELINES

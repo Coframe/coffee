@@ -1,0 +1,50 @@
+#!/bin/bash
+
+
+IMAGE_NAME="coffee"
+CONTAINER_NAME="coffee-maker"
+
+build_image() {
+    docker build -t ${IMAGE_NAME} ./coffee/maker
+    echo "Docker image ${IMAGE_NAME} built successfully."
+}
+
+if [ "$1" = "build" ]; then
+    build_image
+    exit 0
+fi
+
+attach_bash() {
+    docker exec -it ${CONTAINER_NAME} /bin/bash
+    echo "Attached bash session to container ${CONTAINER_NAME}."
+}
+
+if [ "$1" = "bash" ]; then
+    attach_bash
+    exit 0
+fi
+
+
+if [ -z "$1" ]; then
+    echo "Usage: $0 <frontend_directory>"
+    echo "       $0 build"
+    exit 1
+fi
+
+FRONTEND_DIR=$1
+
+docker stop ${CONTAINER_NAME} 2>/dev/null || true
+
+docker rm ${CONTAINER_NAME} 2>/dev/null || true
+
+
+docker run -it \
+    --env-file ./coffee/variables.env \
+    --name ${CONTAINER_NAME} \
+    -v "$(pwd)/coffee/maker:/app" \
+    -v "$(pwd)/${FRONTEND_DIR}:/frontend_dir" \
+    -p 8000:8000 \
+    ${IMAGE_NAME}
+    # /bin/bash
+
+echo "Container ${CONTAINER_NAME} started with frontend directory: ${FRONTEND_DIR}"

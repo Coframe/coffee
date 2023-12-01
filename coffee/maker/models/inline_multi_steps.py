@@ -76,7 +76,7 @@ class InlineMultiStepsAI(BaseAI):
             require_additional_steps = bool(response["require_additional_steps"])
             num_iterations += 1
         return Response(
-            file_name=inputs.sourcefile,
+            file_name=inputs.source_file,
             file_content=inputs.file_content
         )
 

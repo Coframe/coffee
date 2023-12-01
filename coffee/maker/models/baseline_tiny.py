@@ -61,7 +61,7 @@ class BaselineTinyAI(BaseAI):
         full_response.replace(r"\'\'\'.+", "\n")
 
         # save new file
-        with open(inputs.sourcefile, "w") as f:
+        with open(inputs.source_file, "w") as f:
             f.write(full_response)
         print('-------------------')
-        return Response(file_name=inputs.sourcefile, file_content=inputs.file_content)
+        return Response(file_name=inputs.source_file, file_content=inputs.file_content)
