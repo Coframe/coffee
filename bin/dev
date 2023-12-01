@@ -1,37 +1,30 @@
 #!/bin/bash
 
-# Define your Docker image name
-IMAGE_NAME="coffee"
 
-# Define the container name
+IMAGE_NAME="coffee"
 CONTAINER_NAME="coffee-maker"
 
-# Function to build the Docker image
 build_image() {
     docker build -t ${IMAGE_NAME} ./coffee/maker
     echo "Docker image ${IMAGE_NAME} built successfully."
 }
 
-# Check for 'build' command
 if [ "$1" = "build" ]; then
     build_image
     exit 0
 fi
 
-# Function to attach bash session to existing running container
 attach_bash() {
     docker exec -it ${CONTAINER_NAME} /bin/bash
     echo "Attached bash session to container ${CONTAINER_NAME}."
 }
 
-# Check for 'bash' command
 if [ "$1" = "bash" ]; then
     attach_bash
     exit 0
 fi
 
 
-# Check if an argument is provided for the frontend directory
 if [ -z "$1" ]; then
     echo "Usage: $0 <frontend_directory>"
     echo "       $0 build"
@@ -40,13 +33,11 @@ fi
 
 FRONTEND_DIR=$1
 
-# Stop the existing container if it is running
 docker stop ${CONTAINER_NAME} 2>/dev/null || true
 
-# Remove the existing container
 docker rm ${CONTAINER_NAME} 2>/dev/null || true
 
-# Run the Docker container
+
 docker run -it \
     --env-file ./coffee/variables.env \
     --name ${CONTAINER_NAME} \

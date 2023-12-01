@@ -25,84 +25,37 @@ app.add_middleware(
 )
 
 
-class Globals:
-    def __init__(self, frontend_dir, ai):
-        self.frontend_dir = frontend_dir
-        self.ai = ai
-
 class Prompt(BaseModel):
     text: str
     html: Optional[str] = None
 
 
 class Session(BaseModel):
-    file: str = './pages/index.tsx'
     agent: str = None
     directory: str = os.environ.get("FRONTEND_DIR")
-    backup_file_content: str = None
+    file: str = './pages/index.tsx'
+    file_content: str = None
 
 session = Session()
-class Agent(enum.Enum):
-    auto_gpt = "auto_gpt"
-    tiny_ai = "tiny_ai"
-    snippet_ai = "snippet_ai"
-    undo = "/undo"
-
-auto_gpt = get_agent(session.directory)
-tiny_ai = TinyAI()
-snippet_ai = SnippetAI()
 
 
-@app.post("/prompt")
-async def generate(prompt: Prompt):
-    print(prompt.text)
-    if not session.file:
-        session.agent = Agent.auto_gpt
-    else:
-        session.agent = Agent.snippet_ai
+class AutoGPTAgent():
+    name = "auto_gpt"
+    shortcut = "/a"
+    def __init__(self) -> None:
+        self.agent = get_agent(session.directory)
 
-    if(prompt.text.startswith('/a')):
-        session.agent = Agent.auto_gpt
-        prompt.text = prompt.text.replace('/a', '', 1).strip()
-
-    if(prompt.text.startswith('/t')):
-        session.agent = Agent.tiny_ai
-        prompt.text = prompt.text.replace('/t', '', 1).strip()
-
-    if(prompt.text.startswith('/s')):
-        session.agent = Agent.snippet_ai
-        prompt.text = prompt.text.replace('/s', '', 1).strip()
-
-    if(prompt.text == '/undo'):
-        session.agent = Agent.undo
-
-    if session.file and session.agent != Agent.undo:
-        file_content = ReadFileTool(root_dir=session.directory).run(session.file)
-        session.backup_file_content = file_content
-
-    def undo_stream():
-        yield json.dumps({"status": "Undoing last change..."})
-        print("undoing last change")
-        if(session.file and session.backup_file_content):
-            open(session.directory+'/'+session.file, "w").write(session.backup_file_content)
-            session.backup_file_content = None
-            yield json.dumps({"status": "Done."})
-        else:
-            print('no backup stored')
-            yield json.dumps({"status": "No backup stored."})
-
-
-    def auto_gpt_stream():
+    def stream(self, prompt, session):
         yield json.dumps({"status": "AutoGPT is Working..."})
         task =  f"User request: {prompt.text}\n" \
                 f"Currently user selected this element: {prompt.html}.\n"
         if(session.file):
             task += f"Currently user is looking at this file: {session.file}\n" \
                 f"The content of the file is:\n" \
-                f"{file_content}"
+                f"{session.file_content}"
 
         with get_openai_callback() as cb:
-            for update in auto_gpt.run([task]):
+            for update in self.agent.run([task]):
                 if(isinstance(update, str)):
                    update = {"message": update}
                 if(update.get('file_path')):
@@ -112,23 +65,78 @@ async def generate(prompt: Prompt):
             print(cb)
             yield json.dumps({"status": f'Done. ${round(cb.total_cost, 2)}'})
 
-    def tiny_ai_stream():
+class TinyAIAgent():
+    name = "tiny_ai"
+    shortcut = "/t"
+    def __init__(self) -> None:
+        self.agent = TinyAI()
+
+    def stream(self, prompt, session):
         yield json.dumps({"status": "TinyAI is Working..."})
-        input = InputRequest(user_query=prompt.text, selected_element=prompt.html, source_file = session.directory+'/'+session.file, file_content=file_content)
-        for status in tiny_ai.write_code(input):
+        input = InputRequest(user_query=prompt.text, selected_element=prompt.html, source_file = session.directory+'/'+session.file, file_content=session.file_content)
+        for status in self.agent.write_code(input):
             yield json.dumps({"status": status})
         yield json.dumps({"status": "Done."})
 
-    def snippet_ai_stream():
+class SnippetAIAgent():
+    name = "snippet_ai"
+    shortcut = "/s"
+    def __init__(self) -> None:
+        self.agent = SnippetAI()
+
+    def stream(self, prompt, session):
         yield json.dumps({"status": "SnippetAI is Working..."})
-        input = InputRequest(user_query=prompt.text, selected_element=prompt.html, source_file = session.directory+'/'+session.file, file_content=file_content)
-        for status in snippet_ai.write_code(input):
+        input = InputRequest(user_query=prompt.text, selected_element=prompt.html, source_file = session.directory+'/'+session.file, file_content=session.file_content)
+        for status in self.agent.write_code(input):
             yield json.dumps({"status": status})
         yield json.dumps({"status": "Done."})
 
-    stream = {Agent.auto_gpt: auto_gpt_stream, Agent.tiny_ai: tiny_ai_stream, Agent.undo: undo_stream, Agent.snippet_ai: snippet_ai_stream}[session.agent]
-    return StreamingResponse(stream(), media_type="text/event-stream")
+class UndoAgent():
+    name = "undo"
+    shortcut = "/undo"
+    def __init__(self) -> None:
+        pass
 
+    def stream(self, prompt, session):
+        yield json.dumps({"status": "Undoing last change..."})
+        print("undoing last change")
+        if(session.file and session.file_content):
+            open(session.directory+'/'+session.file, "w").write(session.file_content)
+            session.file_content = None
+            yield json.dumps({"status": "Done."})
+        else:
+            print('no backup stored')
+            yield json.dumps({"status": "No backup stored."})
+
+agents = {agent.name: agent for agent in [AutoGPTAgent(), TinyAIAgent(), SnippetAIAgent(), UndoAgent()]}
+
+@app.post("/prompt")
+async def generate(prompt: Prompt):
+    print(prompt.text)
+
+    # selection defaiult agent
+    if not session.agent:
+        if not session.file:
+            session.agent = AutoGPTAgent.name
+        else:
+            session.agent = SnippetAIAgent.name
+
+    # ovveride with user selection
+    for agent in agents.values():
+        if(prompt.text.startswith(agent.shortcut)):
+            session.agent = agent.name
+            prompt.text = prompt.text.replace(agent.shortcut, '', 1).strip()
+
+    agent = agents[session.agent]
+
+    if session.file and agent.name != UndoAgent.name:
+        file_content = ReadFileTool(root_dir=session.directory).run(session.file)
+        session.file_content = file_content
+
+    return StreamingResponse(agent.stream(prompt, session), media_type="text/event-stream")
+
+
+# TODO - combine with /prompt
 class BrowserError(BaseModel):
     message: str
 
