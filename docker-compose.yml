@@ -10,19 +10,3 @@ services:
       - '/app/node_modules'
     ports:
       - 3087:3087
-  backend:
-    build:
-      context: ./coffee/maker
-      dockerfile: Dockerfile
-    volumes:
-      - './coffee/maker:/app'
-      - '${SOURCE_DIR}:/frontend_dir'
-      # - '../coframe/client:/frontend_dir'
-    environment:
-      - FRONTEND_DIR=/frontend_dir/
-    env:
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-    ports:
-      - 8000:8000
-    stdin_open: true
-    tty: true

@@ -33,7 +33,7 @@ class Prompt(BaseModel):
 class Session(BaseModel):
     agent: str = None
     directory: str = os.environ.get("FRONTEND_DIR")
-    file: str = './pages/index.tsx'
+    file: str = './app/page.tsx'
     file_content: str = None
 
 session = Session()
