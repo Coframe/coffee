@@ -9,7 +9,6 @@ from agent.tools.file_managment.read_file import ReadFileTool
 from agent.agent_gpt import get_agent
 from models.base import InputRequest
 from models.tiny import TinyAI
-from models.baseline_tiny import BaselineTinyAI
 from models.snippet import SnippetAI
 import json
 import enum

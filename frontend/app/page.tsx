@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from 'react';
+import Coffee from './coffee';
 
 const MovieCard = ({activeCard, cardIndex, title, subtitle, buttonText, trivia, heroImage}) => (
   activeCard === cardIndex ?
@@ -42,7 +43,10 @@ export default function Home() {
 
   return (
     <>
-      <MenuBar />
+      <Coffee brew="LoginScreen.tsx">
+
+      </Coffee>
+
       <main className="flex flex-col justify-center items-center min-h-screen text-white" style={{ backgroundImage: 'url(https://source.unsplash.com/random/800x600?background)', backgroundSize: 'cover', backgroundAttachment: 'fixed', paddingBottom: '100px' }}>
       <div className="flex flex-col justify-center items-center h-full">
         <MovieCard activeCard={activeCard} cardIndex={0} title="Welcome to MovieFrame!" subtitle="Discover the latest movies here." buttonText="Explore Now!" trivia="Did you know? The first movie ever made was 'Roundhay Garden Scene' in 1888." heroImage="https://source.unsplash.com/random/800x600?movie" />
@@ -51,7 +55,6 @@ export default function Home() {
         <MovieCard activeCard={activeCard} cardIndex={3} title="Ready for more Movies?" subtitle="Let's explore new releases." buttonText="Explore!" trivia="Movie Trivia: 'Gone with the Wind' holds the record for the most Oscars won by a single film." heroImage="https://source.unsplash.com/random/800x600?new-releases" />
       </div>
       </main>
-
     <footer className="bg-black text-white p-4 text-center">
       Basic Footer Content
       <div>© 2023 MovieFrame, Inc.</div>

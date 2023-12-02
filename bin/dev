@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 IMAGE_NAME="coffee"
 CONTAINER_NAME="coffee-maker"
 
@@ -9,42 +8,62 @@ build_image() {
     echo "Docker image ${IMAGE_NAME} built successfully."
 }
 
-if [ "$1" = "build" ]; then
-    build_image
-    exit 0
-fi
-
 attach_bash() {
     docker exec -it ${CONTAINER_NAME} /bin/bash
     echo "Attached bash session to container ${CONTAINER_NAME}."
 }
 
-if [ "$1" = "bash" ]; then
-    attach_bash
-    exit 0
-fi
+run_watch() {
+    FOLDER=$1
+    echo "Running coffee_watcher.py on ${FOLDER}"
+    docker run -it \
+        --env-file ./coffee/variables.env \
+        -v "$(pwd)/coffee/maker:/app" \
+        -v "$(pwd)/${FOLDER}:/frontend_dir" \
+        ${IMAGE_NAME} \
+        python3 coffee_watcher.py
+}
 
+start_container() {
+    FRONTEND_DIR=$1
+    docker stop ${CONTAINER_NAME} 2>/dev/null || true
+    docker rm ${CONTAINER_NAME} 2>/dev/null || true
 
-if [ -z "$1" ]; then
-    echo "Usage: $0 <frontend_directory>"
-    echo "       $0 build"
-    exit 1
-fi
+    docker run -it \
+        --env-file ./coffee/variables.env \
+        --name ${CONTAINER_NAME} \
+        -v "$(pwd)/coffee/maker:/app" \
+        -v "$(pwd)/${FRONTEND_DIR}:/frontend_dir" \
+        -p 8000:8000 \
+        ${IMAGE_NAME}
 
-FRONTEND_DIR=$1
+    echo "Container ${CONTAINER_NAME} started with frontend directory: ${FRONTEND_DIR}"
+}
 
-docker stop ${CONTAINER_NAME} 2>/dev/null || true
-
-docker rm ${CONTAINER_NAME} 2>/dev/null || true
-
-
-docker run -it \
-    --env-file ./coffee/variables.env \
-    --name ${CONTAINER_NAME} \
-    -v "$(pwd)/coffee/maker:/app" \
-    -v "$(pwd)/${FRONTEND_DIR}:/frontend_dir" \
-    -p 8000:8000 \
-    ${IMAGE_NAME}
-    # /bin/bash
-
-echo "Container ${CONTAINER_NAME} started with frontend directory: ${FRONTEND_DIR}"
+case "$1" in
+    build)
+        build_image
+        ;;
+    bash)
+        attach_bash
+        ;;
+    watch)
+        if [ -z "$2" ]; then
+            echo "Error: No folder specified for watch command."
+            echo "Usage: $0 watch <folder>"
+            exit 1
+        fi
+        run_watch $2
+        ;;
+    *)
+        if [ -z "$1" ]; then
+            echo "Error: No command or frontend directory specified."
+            echo "Usage: $0 <frontend_directory>"
+            echo "       $0 build"
+            echo "       $0 bash"
+            echo "       $0 watch <folder>"
+            exit 1
+        fi
+        start_container $1
+        ;;
+esac
