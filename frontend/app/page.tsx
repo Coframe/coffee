@@ -43,8 +43,8 @@ export default function Home() {
 
   return (
     <>
-      <Coffee brew="LoginScreen.tsx">
-
+      <Coffee brew="Testimonials.tsx">
+        Create a Testimonials component with avatar, name, and quote.
       </Coffee>
 
       <main className="flex flex-col justify-center items-center min-h-screen text-white" style={{ backgroundImage: 'url(https://source.unsplash.com/random/800x600?background)', backgroundSize: 'cover', backgroundAttachment: 'fixed', paddingBottom: '100px' }}>
