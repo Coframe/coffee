@@ -8,3 +8,4 @@ yaspin
 tiktoken
 jinja2
 ijson
+watchdog

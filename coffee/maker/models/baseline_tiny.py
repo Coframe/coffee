@@ -4,6 +4,7 @@ from openai import OpenAI
 from models.base import BaseAI, InputRequest, Response
 from functools import lru_cache
 import jinja2
+import re
 
 client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
@@ -15,25 +16,38 @@ class BaselineTinyAI(BaseAI):
 
     def prompt(self, **kwargs):
         template = jinja2.Template("""
-            You are an expert in frontend development.
-            Your task is to: {{user_query}}
-            Selected element: {{selected_element}}
-            File:
+            You are an expert in the frontend development.
+            Your task is to create a react component file according to the user query:
+            {{user_query}}
+
+            This is current content of component file:
+            ```
             {% for line in file_content.split("\n") %}
             {{ line }}
             {% endfor %}
-            Do not use any libraries.
+            ```
 
-            Modify and output whole file and nothing else (no markdown). It will be saved as is to the file.
+            This is parent component file, it uses <Coffee> component to render component that you should create.
+            ```
+            {% for line in parent_file_content.split("\n") %}
+            {{ line }}
+            {% endfor %}
+            ```
+
+            Output whole new file for {{source_file}} within ``` and nothing else. It will be saved as is to the component file {{source_file}} and should work out of the box.
+            Do not add any new libraries. Put everything into single file: styles, types, etc.
+
         """, trim_blocks=True, lstrip_blocks=True, autoescape=False)
         return template.render(**kwargs)
 
 
-    def write_code(self, inputs: InputRequest) -> Response:
+    def write_code(self, **args) -> Response:
         print('-------------------')
 
 
-        prompt = self.prompt(**inputs.dict())
+        prompt = self.prompt(**args)
+        print(prompt)
+        print('-------------------')
         self.conversation_history.append(
             {"role": "user", "content": prompt}
         )
@@ -57,11 +71,19 @@ class BaselineTinyAI(BaseAI):
             if("\n" in delta):
                 yield chunked_delta
                 chunked_delta = ""
-        print(full_response)
-        full_response.replace(r"\'\'\'.+", "\n")
 
-        # save new file
-        with open(inputs.source_file, "w") as f:
-            f.write(full_response)
+        # find and extract content within ``` using regex
+        pattern = r'```.*?\n(.*?)```'
+        matches = re.findall(pattern, full_response, re.DOTALL)
+        if(len(matches) == 0):
+            raise Exception("No code found in response")
+        new_content = matches[0]
+
         print('-------------------')
-        return Response(file_name=inputs.source_file, file_content=inputs.file_content)
+        print(new_content)
+        # save new file
+        with open(args['source_file'], "w") as f:
+            f.write(new_content)
+
+        print('-------------------')
+        return Response(file_name=args['source_file'], file_content=new_content)
