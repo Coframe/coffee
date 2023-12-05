@@ -1,7 +1,7 @@
 {
-    "mount": "app/coffee",
     "patterns": [
         "**/*.tsx",
         "**/*.jsx"
-    ]
+    ],
+    "mount": "./components"
 }
