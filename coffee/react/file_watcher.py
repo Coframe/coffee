@@ -6,12 +6,19 @@ from watchdog.events import FileSystemEventHandler
 
 
 class FileWatcher:
-    def __init__(self, base_path, ignore_patterns=None):
+    def __init__(self, base_path, watch_patterns = None, ignore_patterns=None):
         self.base_path = base_path
-        self.ignore_patterns = ['.git/*']
+        self.watch_patterns = watch_patterns
+        self.ignore_patterns = ignore_patterns+['.git/*']
         if ignore_patterns:
             self.ignore_patterns.extend(ignore_patterns)
         self._load_ignore_patterns()
+
+        if(self.watch_patterns):
+            print("Watch patterns:", self.watch_patterns)
+        else:
+            print("Ignore patterns:", self.ignore_patterns)
+
         self.observer = Observer()
         self.event_handler = FileSystemEventHandler()
         self.event_handler.on_modified = self._on_modified
@@ -31,16 +38,9 @@ class FileWatcher:
             except FileNotFoundError:
                 continue
 
-        print("Ignore patterns:", self.ignore_patterns)
-
 
     def _is_ignored(self, path):
-        # Check if the path matches any of the ignore patterns
         relative_path = pathlib.Path(path).relative_to(self.base_path)
-
-        # Check if file or folder is hidden
-        if [part for part in relative_path.parts if part.startswith('.') or "brew" in part]:
-            return True
 
         for pattern in self.ignore_patterns:
             # Check the full path for a match
@@ -51,10 +51,23 @@ class FileWatcher:
                 if fnmatch.fnmatch(part, pattern.rstrip('/')):
                     return True
 
+        # Check if any watch patterns are matched:
+        if self.watch_patterns:
+            for pattern in self.watch_patterns:
+                # Check the full path for a match
+                if fnmatch.fnmatch(str(relative_path), pattern):
+                    return False
+                # Check each part of the path for a match
+                for part in relative_path.parts:
+                    if fnmatch.fnmatch(part, pattern.rstrip('/')):
+                        return False
+            return True
+
         return False
 
     def _on_modified(self, event):
         if not self._is_ignored(event.src_path):
+            print("Modified:", event.src_path)
             self.last_modified_file = event.src_path
             self.last_modified_file_inc += 1
 

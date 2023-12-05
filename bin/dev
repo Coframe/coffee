@@ -1,5 +1,6 @@
 #!/bin/bash
 
+react_IMAGE_NAME="coffee_react"
 IMAGE_NAME="coffee"
 CONTAINER_NAME="coffee-maker"
 
@@ -13,15 +14,18 @@ attach_bash() {
     echo "Attached bash session to container ${CONTAINER_NAME}."
 }
 
-run_watch() {
+build_react_image() {
+    docker build -t ${react_IMAGE_NAME} ./coffee/react
+    echo "Docker react image ${react_IMAGE_NAME} built successfully."
+}
+
+run_react() {
     FOLDER=$1
-    echo "Running coffee_watcher.py on ${FOLDER}"
     docker run -it \
         --env-file ./coffee/variables.env \
-        -v "$(pwd)/coffee/maker:/app" \
+        -v "$(pwd)/coffee/react:/app" \
         -v "$(pwd)/${FOLDER}:/frontend_dir" \
-        ${IMAGE_NAME} \
-        python3 coffee_watcher.py
+        ${react_IMAGE_NAME}
 }
 
 start_container() {
@@ -47,14 +51,22 @@ case "$1" in
     bash)
         attach_bash
         ;;
-    watch)
-        if [ -z "$2" ]; then
-            echo "Error: No folder specified for watch command."
-            echo "Usage: $0 watch <folder>"
-            exit 1
-        fi
-        run_watch $2
+    react)
+        case "$2" in
+            build)
+                build_react_image
+                ;;
+            *)
+                if [ -z "$2" ]; then
+                    echo "Error: No folder specified for react command."
+                    echo "Usage: $0 react <folder>"
+                    exit 1
+                fi
+                run_react $2
+                ;;
+        esac
         ;;
+
     *)
         if [ -z "$1" ]; then
             echo "Error: No command or frontend directory specified."
