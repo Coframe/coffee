@@ -8,7 +8,7 @@ const Coffee: React.FC<{ brew: string, children: React.ReactNode }> = ({ brew, c
     useEffect(() => {
         const loadComponent = async () => {
             try {
-                const Component = await import(`./brew/${brew}`);
+                const Component = await import(`./${brew}`);
                 setGeneratedComponent(() => Component.default || FallbackComponent);
             } catch (error) {
                 console.error('Failed to load component', error);

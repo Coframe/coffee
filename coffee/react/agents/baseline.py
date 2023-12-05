@@ -57,6 +57,7 @@ class BaselineAgent():
             response_format={"type": "text"},
             stream=True,
         )
+
         response_stream = self._cached_generator(
             fx = client.chat.completions.create,
             fx_args = gpt_args,
@@ -102,7 +103,6 @@ class BaselineAgent():
         return
 
     def _cached_generator(self, fx=None, fx_args=None, cache_key=None):
-        cache_key = cache_key or hash(frozenset(fx_args.items()))
         print("Cache key:", cache_key)
         if(cache_key in self.cache):
             print("Using cache for", cache_key)
