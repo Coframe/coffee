@@ -1,7 +1,0 @@
-{
-    "patterns": [
-        "**/*.tsx",
-        "**/*.jsx"
-    ],
-    "mount": "./components"
-}
