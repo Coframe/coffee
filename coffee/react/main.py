@@ -55,7 +55,7 @@ def replace_coffee_tag_with_brew(file_path, file_content, coffee_tag, attributes
     """
     print(f'Replacing <Coffee> with {file_path} component...')
 
-    # Extracting component name and tag positions
+    # Update tag
     component_name = coffee_tag['props']['brew'].split('.')[0]
     coffee_start, coffee_end = coffee_tag['match'].span()
     attributes = coffee_tag["attributes"]
@@ -63,12 +63,11 @@ def replace_coffee_tag_with_brew(file_path, file_content, coffee_tag, attributes
         attributes = re.sub(rf'\b{attr}="[^"]+"\s*|\b{attr}\b\s*', '', attributes)
     file_content = file_content[:coffee_start] + f'<{component_name} {attributes.strip()} />' + file_content[coffee_end:]
 
-    # Add import statement
+    # Update import statements
     import_statement = f"import {component_name} from '{mount_dir}/{component_name}'\n"
     file_content, _ = update_imports(file_content, import_statement, upsert=True)
     file_content, _ = update_imports(file_content, coffee_import_statement, remove=True)
 
-    # Write the modified content back to the file
     with open(file_path, 'w') as file:
         file.write(file_content)
 
@@ -97,7 +96,7 @@ def extract_coffee_tag(file_content):
     Extracts the first <Coffee ... > ... </Coffee>  or <Coffee .../> tag from the given file content.
     Returns the match object, props, and children.
     """
-    pattern = r'<Coffee([^>/]*)(?:>(.*?)</Coffee>|/>)'
+    pattern = r'<Coffee\s([^>/]*)(?:>(.*?)</Coffee>|/>)'
     match = re.search(pattern, file_content, re.DOTALL)
 
     if match:
@@ -108,9 +107,16 @@ def extract_coffee_tag(file_content):
     return None
 
 def parse_config(path):
-    """Read and parse json file at path"""
-    with open(path, 'r') as file:
-        return json.load(file)
+    """Read and parse json file at path."""
+    default_config = {
+        "mount": "./components",
+        "patterns": ['**/*.tsx', '**/*.jsx']
+    }
+    try:
+        with open(path, 'r') as file:
+            return dict(default_config, **json.load(file))
+    except FileNotFoundError:
+        return default_config
 
 def mount(source, target):
     """
@@ -143,10 +149,9 @@ def umount(source, target):
             os.remove(d)
 
 if __name__ == "__main__":
-    fe_directory = os.environ.get("FRONTEND_DIR")  # Default to current directory if not set
+    fe_directory = os.environ.get("FRONTEND_DIR", "/frontend_dir")
     config = parse_config(fe_directory+"/coffee.config.json")
 
-    # Retrieve the directory to watch from environment variable or set a default
     watcher = FileWatcher(fe_directory, watch_patterns=config['patterns'], ignore_patterns=["Coffee.tsx"])
 
     watcher.start()

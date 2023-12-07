@@ -123,7 +123,7 @@ class BaselineAgent():
         total_cost = MODEL_COST_PER_1K_TOKENS[fx_args['model']] * input_tokens / 1000 + MODEL_COST_PER_1K_TOKENS[fx_args['model'] + '-completion'] * output_tokens / 1000
         return dict(total_cost=total_cost, total_tokens=input_tokens + output_tokens)
 
-# From langchain
+# TODO: use langchain variable, if we will start using langchain for future agents
 MODEL_COST_PER_1K_TOKENS = {
     # GPT-4 input
     "gpt-4": 0.03,
