@@ -29,12 +29,21 @@ Create `coffee.config.json` with:
 
 # How to:
 * Edit existing component
+```
+```
 * Extract code to component
+```
+```
 * Create own prompt
+```
+```
 * Create own agent
+```
+```
 
 
 # TODO:
+* Tests
 * Prettier
 * Variaty of agents: faster/smarter/cheaper
 * Visual and data feedback loop
