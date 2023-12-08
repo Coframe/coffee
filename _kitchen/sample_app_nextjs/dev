@@ -1,0 +1,25 @@
+#!/bin/bash
+# ./dev
+# ./dev -p 1234
+# ./dev build
+
+# Default values
+PORT=3087
+IMAGE_NAME="sample-app-nextjs"
+CONTAINER_NAME="same-app-nextjs-container"
+
+# Check if 'dev build' is the command
+[ "$1" = "build" ] && docker build -t $IMAGE_NAME . && shift 1
+
+# Check for port specification
+[ "$1" = "-p" ] && [ -n "$2" ] && PORT=$2
+
+# Check if container is already running and stop/remove it
+if docker ps -a | grep -q $CONTAINER_NAME; then
+    echo "Stopping and removing existing container..."
+    docker stop $CONTAINER_NAME
+    docker rm $CONTAINER_NAME
+fi
+
+# Run the Docker container
+docker run -it -v "$(pwd)"/app:/app/app -p $PORT:3087 --name $CONTAINER_NAME $IMAGE_NAME
