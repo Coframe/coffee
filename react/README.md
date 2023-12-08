@@ -43,8 +43,7 @@ Create `coffee.config.json` with:
 
 
 # TODO:
-* Tests
-* Prettier
-* Variaty of agents: faster/smarter/cheaper
-* Visual and data feedback loop
-* DSL
+[] Tests/Linter
+[] Prettier on generated code
+[] Variaty of agents: faster/smarter/cheaper
+[] Add visuals and actual data to prompt
