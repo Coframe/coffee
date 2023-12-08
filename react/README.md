@@ -44,10 +44,7 @@ Create `coffee.config.json` with:
 
 # TODO:
 
-[] Tests/Linter
-
-[] Prettier on generated code
-
-[] Variaty of agents: faster/smarter/cheaper
-
-[] Add visuals and actual data to prompt
+- [ ] Tests/Linter
+- [ ] Prettier on generated code
+- [ ] Variaty of agents: faster/smarter/cheaper
+- [ ] Add visuals and actual data to prompt
