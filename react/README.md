@@ -18,24 +18,33 @@ docker pull coframe/coffee:latest
 docker run -it -e OPENAI_API_KEY=${OPENAI_API_KEY} -v $(pwd):/frontend_dir coframe/coffee:latest
 ```
 
-# Customize:
+# Why we like it?
+- Realiable enough for UI components.
+- Works with real data/callbacks from parent.
+- Leads to maintanble codebase.
+
+# How to:
+* Edit existing component
+```
+```
+* Extract code to component
+```
+```
+* Create own prompt
 Create `coffee.config.json` with:
 ```json
 {
     ...setup...
 }
 ```
-
-
-# How to:
-* Edit existing component
-* Extract code to component
-* Create own prompt
 * Create own agent
+```
+```
 
 
 # TODO:
-* Prettier
-* Variaty of agents: faster/smarter/cheaper
-* Visual and data feedback loop
-* DSL
+
+- [ ] Tests/Linter
+- [ ] Prettier on generated code
+- [ ] Variaty of agents: faster/smarter/cheaper
+- [ ] Add visuals and actual data to prompt
