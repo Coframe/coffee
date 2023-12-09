@@ -13,12 +13,11 @@ run_docker() {
   docker run -it -v "${abs_working_dir}":/frontend_dir -v "$(pwd)":/app -e OPENAI_API_KEY=$OPENAI_API_KEY $IMAGE_NAME jurigged main.py
 }
 
-# Usage string
 usage() {
   echo "===================="
   echo "Usage: ./dev [build] WORKING_DIR [-p PORT]"
   echo "Options:"
-  echo "  build: Build Docker image without needing a WORKING_DIR"
+  echo "  build: Build Docker image"
   echo "WORKING_DIR is the path to the frontend directory to be mounted when running the container"
   echo "===================="
 }
@@ -28,12 +27,11 @@ if [ "$1" = "build" ]; then
   exit 0
 fi
 
-# Check for WORKING_DIR
+
 if [ -z "$1" ]; then
   echo "Error: WORKING_DIR is mandatory for running the container."
   usage
   exit 1
 fi
 
-# Run docker with specified port and working directory
 run_docker $1

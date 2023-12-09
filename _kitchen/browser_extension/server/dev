@@ -18,7 +18,7 @@ usage() {
   echo "===================="
   echo "Usage: ./dev [build] WORKING_DIR [-p PORT]"
   echo "Options:"
-  echo "  build: Build Docker image without needing a WORKING_DIR"
+  echo "  build: Build Docker image"
   echo "  -p PORT: Run Docker container with specified port (requires WORKING_DIR)"
   echo "WORKING_DIR is the path to the frontend directory to be mounted when running the container"
   echo "===================="
