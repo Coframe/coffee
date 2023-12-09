@@ -31,7 +31,7 @@ class Prompt(BaseModel):
 
 class Session(BaseModel):
     agent: str = None
-    directory: str = os.environ.get("FRONTEND_DIR")
+    directory: str = os.environ.get("FRONTEND_DIR", '/frontend_dir')
     file: str = './app/page.tsx'
     file_content: str = None
 

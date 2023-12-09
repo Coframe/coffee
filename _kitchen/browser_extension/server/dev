@@ -1,0 +1,50 @@
+#!/bin/bash
+
+IMAGE_NAME="coffee_browser_ext_api"
+
+run_docker() {
+  local port=$1
+  local working_dir=$2
+
+  if [ -z "$OPENAI_API_KEY" ]; then
+    echo "Error: OPENAI_API_KEY is not set."
+    exit 1
+  fi
+  local abs_working_dir=$(realpath "$working_dir")
+  docker run -it -p "${port}":8000 -v "${abs_working_dir}":/frontend_dir -v "$(pwd)":/app -e OPENAI_API_KEY=$OPENAI_API_KEY $IMAGE_NAME
+}
+
+usage() {
+  echo "===================="
+  echo "Usage: ./dev [build] WORKING_DIR [-p PORT]"
+  echo "Options:"
+  echo "  build: Build Docker image without needing a WORKING_DIR"
+  echo "  -p PORT: Run Docker container with specified port (requires WORKING_DIR)"
+  echo "WORKING_DIR is the path to the frontend directory to be mounted when running the container"
+  echo "===================="
+}
+
+
+if [ "$1" = "build" ]; then
+  docker build -t $IMAGE_NAME .
+  exit 0
+fi
+
+PORT=8000
+if [ "$1" = "-p" ]; then
+  if [ -z "$2" ]; then
+    echo "Error: Port number is required after -p."
+    usage
+    exit 1
+  fi
+  PORT=$2
+  shift 2
+fi
+
+if [ -z "$1" ]; then
+  echo "Error: WORKING_DIR is mandatory for running the container."
+  usage
+  exit 1
+fi
+
+run_docker $PORT $1
