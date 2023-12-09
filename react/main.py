@@ -148,7 +148,14 @@ def umount(source, target):
             print(f"Deleting file {d}")
             os.remove(d)
 
+watcher = None
+
 if __name__ == "__main__":
+    if(watcher):
+        print('Hot reloading...')
+        watcher.stop()
+
+    print('Starting...')
     fe_directory = os.environ.get("FRONTEND_DIR", "/frontend_dir")
     config = parse_config(fe_directory+"/coffee.config.json")
 
