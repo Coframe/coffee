@@ -64,7 +64,7 @@ When you run Coffee, it will listen for changes to `js/jsx/ts/tsx` files in your
 
 Every time you save your source file, Coffee will look to see if there are any `<Coffee>` components which need brewing (if they're new or if their props or prompt have been updated). For each `<Coffee>` component the agent finds, Coffee will pass your parent component code, any existing child component code (`ExampleComponent.tsx` in the above example), your prompt, and any custom configuration to the OpenAI chat completions API in order to generate a new version of the target component.
 
-The brewing process is currently a little slow, but we're working on several ways to make it significantly faster so you can iterate on your components much faster.
+The brewing process is currently a little slow, but we're working on several ways to make it significantly faster.
 
 Finally, once you're happy with your brewed component, you can add a `pour` prop to your `<Coffee>` component and save the file, which will automatically replace the `<Coffee>` component with the generated component.
 
