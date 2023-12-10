@@ -1,8 +1,10 @@
-# Coffee ☕ <!-- omit from toc -->
+<div align="center">
+
+# Coffee &nbsp;☕ <!-- omit from toc -->
 
 — <ins>**Cof**</ins>rame <ins>**F**</ins>ront-<ins>**E**</ins>nd <ins>**E**</ins>ngineer
 
-> Quickly build and iterate on React components with AI!
+*Quickly build and iterate on your front-end with AI - right from your own IDE!*
 
 <p>
 <a href="https://github.com/coframe/coffee/commits"><img alt="GitHub Last Commit" src="https://img.shields.io/github/last-commit/coframe/coffee" /></a>
@@ -10,6 +12,8 @@
 <a href="https://github.com/coframe/coffee/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/badge/License-MIT-green.svg" /></a>
 <a href="https://github.com/coframe/coffee"><img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/coframe/coffee?style=social" /></a>
 </p>
+<br />
+</div>
 
 ```
 <!-- TODO Animated demo of -->
@@ -19,17 +23,21 @@
 </Coffee>
 ```
 
+> Coffee caffeinates your frontend development workflow with AI. This project is intended to be more than just a nice demo, but rather be an ergonomic tool that can write and interact with production-quality code.
+
 - [Features](#features)
 - [Try It](#try-it)
 - [How It Works](#how-it-works)
 - [TODO](#todo)
 - [Related](#related)
+- [Community](#community)
+- [Core Contributors](#core-contributors)
 - [License](#license)
 
 ## Features
 
 - Works with any React codebase including Next.js, Remix, etc.
-- Realiable enough for most standard UI components
+- Reliable enough for most standard UI components
 - Supports most simple prop types (data, callbacks, etc)
 - Uses the same DX for both edit existing components as well as creating new components from scratch
 - Generates clean, maintainable code
@@ -37,7 +45,7 @@
 
 ## Try It
 
-No dependecies, no setup.
+No dependencies, no setup.
 
 Just your React webapp normally, and then open another shell in the same directory and run:
 
@@ -45,6 +53,8 @@ Just your React webapp normally, and then open another shell in the same directo
 docker pull coframe/coffee:latest
 docker run -it -e OPENAI_API_KEY=${OPENAI_API_KEY} -v $(pwd) coframe/coffee:latest
 ```
+
+You can also build the image yourself from this repo.
 
 ## How It Works
 
@@ -133,9 +143,29 @@ You can keep iterating like this forever – you can never run out of Coffee! �
 - [v0](https://v0.dev) - Amazing generative React playground by [Vercel](https://vercel.com)
   - We're hoping they OSS it soon in order to open it up to a wider audience 🥹
   - We were excited to experiment with a DX that was more natively integrated into a frontend developer's existing workflow, so we could better understand the tradeoffs between two approaches.
-- [FastUI](https://github.com/pydantic/FastUI) - Generative UIs from a Python source of truth
-  - Really awesome, well-done project that we took a ton of inspiration from 💯
-  - One of the areas we wanted to explore that differs from FastUI's approach is that many frontend developers aren't familiar with Python, so what would a DX look like that more closely resembles how frontend devs actually build and iterate on components?
+- [Screenshot to Code](https://github.com/abi/screenshot-to-code) - OSS project showcasing the power of GPT-V for UI generation 🤯
+  - One of the first projects to showcase GPT-V's capabilities for UI generation from an image (besides [GDB's timeless GPT-4 announcement](https://www.youtube.com/live/outcGtbnMuQ?feature=shared&t=978), of course!)
+- [Draw a UI](https://github.com/SawyerHood/draw-a-ui) - ditto!
+- [Cursor](https://cursor.sh/) - AI-native IDE that the Coframe team uses and loves 🥰
+  - Coffee can be used in any IDE, but we're huge fans of Cursor and are excited to see what they launch next!
+
+## Community
+
+Join us on [Discord](https://discord.gg/coframe) for support, to show off what you've brewed, and good vibes in general.
+
+Follow us on [Twitter](https://twitter.com/coframe_ai) for new feature releases, product updates, and other exciting news!
+ 
+## Core Contributors
+
+- [Pavlo Razumovskyi](https://github.com/1um) (lead)
+- [Josh Payne](https://github.com/joshpxyne)
+- [Tinah Hong](https://github.com/tunahfishy)
+- [Alex Korshuk](https://github.com/AlekseyKorshuk)
+- [Travis Fischer](https://github.com/transitive-bullshit)
+
+If you'd like to be a contributor, just submit a pull request!
+
+⚡ We are also hiring for generalist engineers and AI engineers who are passionate about the future of UX/AI. Coffee is just one of the many exciting things we have brewing. If you want to build this future with us, please shoot us a DM on [Twitter](https://twitter.com/coframe_ai)!
 
 ## License
 
