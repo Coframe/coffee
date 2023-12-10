@@ -139,7 +139,7 @@ You can keep iterating like this forever – you can never run out of Coffee! �
  
 ## Core Contributors
 
-- [Pavlo Razumovskyi](https://github.com/1um)
+- [Pavlo Razumovskyi](https://github.com/1um) (lead)
 - [Josh Payne](https://github.com/joshpxyne)
 - [Tinah Hong](https://github.com/tunahfishy)
 - [Alex Korshuk](https://github.com/AlekseyKorshuk)
