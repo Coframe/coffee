@@ -53,7 +53,7 @@ Coffee uses Docker to make sure that any agentic code it runs is fully isolated.
 When you run Coffee, it will listen for changes to `js/jsx/ts/tsx` files in your source directory, and if it detects a `<Coffee>` JSX component, it will kick off its magic!
 
 ```tsx
-<Coffee brew='ExampleComponent.tsx' exampleProp='foo'>
+<Coffee brew='ExampleComponent.tsx'>
   Here is where you put your prompt that Coffee will use to generate the first
   version of your desired component.
   <br />
