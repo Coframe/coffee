@@ -126,6 +126,7 @@ You can keep iterating like this forever – you can never run out of Coffee! �
 - [ ] Expand support for `coffee.config.json` config
 - [ ] Consider converting Coffee to be a native TS module
   - This would be really nice for cleanly integrating with build systems tools like Next.js, webpack, Remix, Prettier, ESlint, etc.
+- [ ] Add support for other popular frontend frameworks (Vue, Svelte, etc)
 
 ## Related
 
