@@ -97,7 +97,23 @@ Now you have a fully functional, reusable React component that's ready to use in
 
 **The coolest part of Coffee, however, is that you can edit existing React components just as easily as creating new components from scratch.**
 
-Let's say that you want to edit this button component again after the fact. The only difference is that
+Let's say that you want to edit this button component again after the fact. The only difference is that you pass the path to your existing component in the `brew` prop.
+
+```tsx
+export function Example() {
+  return (
+    <Coffee
+      brew='MyButton.tsx'
+      title='Click Me'
+      onClick={() => console.log('clicked')}
+    >
+      Make the button background fun and animated.
+    </Coffee>
+  )
+}
+```
+
+You can keep iterating like this forever – you can never run out of Coffee! 😂
 
 ## TODO
 
