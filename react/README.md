@@ -132,7 +132,7 @@ You can keep iterating like this forever – you can never run out of Coffee! �
 
 - [v0](https://v0.dev) - Amazing generative React playground by [Vercel](https://vercel.com)
   - We're hoping they OSS it soon in order to open it up to a wider audience 🥹
-  - We were excited to experiment with a DX that was more natively integrated into a frontend developer's existing workflow, but the two approaches each have their tradeoffs.
+  - We were excited to experiment with a DX that was more natively integrated into a frontend developer's existing workflow, so we could better understand the tradeoffs between two approaches.
 - [FastUI](https://github.com/pydantic/FastUI) - Generative UIs from a Python source of truth
   - Really awesome, well-done project that we took a ton of inspiration from 💯
   - One of the areas we wanted to explore that differs from FastUI's approach is that many frontend developers aren't familiar with Python, so what would a DX look like that more closely resembles how frontend devs actually build and iterate on components?
