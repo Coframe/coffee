@@ -130,7 +130,7 @@ You can keep iterating like this forever – you can never run out of Coffee! �
 ## Related
 
 - [v0](https://v0.dev) - Amazing generative React playground by [Vercel](https://vercel.com)
-  - We're hoping they OSS it soon and are able to open it up to a wider audience 🥹
+  - We're hoping they OSS it soon in order to open it up to a wider audience 🥹
   - We were excited to experiment with a DX that was more natively integrated into a frontend developer's existing workflow, but the two approaches each have their tradeoffs.
 - [FastUI](https://github.com/pydantic/FastUI) - Generative UIs from a Python source of truth
   - Really awesome, well-done project that we took a ton of inspiration from 💯
