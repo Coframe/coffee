@@ -9,7 +9,7 @@
 <a href="https://github.com/coframe/coffee/issues"><img alt="GitHub Issues" src="https://img.shields.io/github/issues/coframe/coffee" /></a>
 <a href="https://github.com/coframe/coffee/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/badge/License-MIT-green.svg" /></a>
 <a href="https://github.com/coframe/coffee"><img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/coframe/coffee?style=social" /></a>
-<a href="https://discord.gg/coframe"><img alt="Discord" src="https://img.shields.io/discord/coframe" /></a>
+<a href="https://discord.gg/coframe"><img alt="Discord" src="https://img.shields.io/discord/1179845843809996850" /></a>
 </p>
 
 ```
