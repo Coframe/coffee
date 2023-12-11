@@ -10,12 +10,12 @@ run_docker() {
     exit 1
   fi
   local abs_working_dir=$(realpath "$working_dir")
-  docker run -it -v "${abs_working_dir}":/frontend_dir -v "$(pwd)":/app -e OPENAI_API_KEY=$OPENAI_API_KEY $IMAGE_NAME jurigged main.py
+  docker run -it -v "${abs_working_dir}":/frontend_dir -v "$(pwd)":/app -e OPENAI_API_KEY=$OPENAI_API_KEY $IMAGE_NAME
 }
 
 usage() {
   echo "===================="
-  echo "Usage: ./dev [build] WORKING_DIR [-p PORT]"
+  echo "Usage: ./dev [build] WORKING_DIR"
   echo "Options:"
   echo "  build: Build Docker image"
   echo "WORKING_DIR is the path to the frontend directory to be mounted when running the container"
