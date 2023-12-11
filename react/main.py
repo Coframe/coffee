@@ -10,7 +10,7 @@ import json
 CodeAgent = BaselineAgent()
 PathAgent = ComponentPathAgent()
 
-def process_file(file_path, mount_dir="./components", fe_directory=None):
+def process_file(file_path, mount_dir="./components", root_directory=None):
     with open(file_path, 'r') as file:
         file_content = file.read()
 
@@ -24,7 +24,7 @@ def process_file(file_path, mount_dir="./components", fe_directory=None):
     caffeinated_component = extract_caffeinated_component(file_content)
     if caffeinated_component:
         print(f"Caffeinated component found in {file_path}")
-        proccess_caffeinated_component(file_path, file_content=file_content, caffeinated_component=caffeinated_component, fe_directory=fe_directory)
+        proccess_caffeinated_component(file_path, file_content=file_content, caffeinated_component=caffeinated_component, root_directory=root_directory)
         return
 
 def process_coffee_tag(coffee_tag=None, file_path=None, file_content=None, mount_dir=None):
@@ -42,14 +42,14 @@ def process_coffee_tag(coffee_tag=None, file_path=None, file_content=None, mount
 
     pour = coffee_tag['props'].get('pour', None)
 
-    if(pour):
+    if pour:
         print(f"Pouring component to {pour}...")
         set_mount('./mount', working_dir, False)
-        pour_component(file_path=file_path, file_content=file_content, coffee_tag=coffee_tag, pour_path=pour, mount_dir=mount_dir, coffee_import_statement=coffee_import_statement, brew_content=brew_content)
+        pour_component(file_path=file_path, file_content=file_content, coffee_tag=coffee_tag, brew_content=brew_content, coffee_import_statement=coffee_import_statement, pour_path=pour, mount_dir=mount_dir)
     else:
         print("Brewing new component...")
         set_mount('./mount', working_dir, True)
-        brew_component(file_path=file_path, file_content=file_content, coffee_tag=coffee_tag, coffee_import_statement=coffee_import_statement, brew_content=brew_content, brew_path=brew_path)
+        brew_component(file_path=file_path, file_content=file_content, coffee_tag=coffee_tag, brew_content=brew_content, coffee_import_statement=coffee_import_statement,  brew_path=brew_path)
 
     return
 
@@ -96,7 +96,7 @@ def pour_component(file_path=None, file_content=None, coffee_tag=None, pour_path
 
     print("Replacement complete.")
 
-def proccess_caffeinated_component(file_path=None, file_content=None, caffeinated_component=None, fe_directory=None):
+def proccess_caffeinated_component(file_path=None, file_content=None, caffeinated_component=None, root_directory=None):
     component_name = caffeinated_component['tag']
     import_pattern = rf"({component_name})(.*?)from\s[\'\"](.*?)[\'\"]"
     match = re.search(import_pattern, file_content, re.DOTALL)
@@ -110,7 +110,7 @@ def proccess_caffeinated_component(file_path=None, file_content=None, caffeinate
         component=component_name,
         parent_file_path=file_path,
         import_statement=match.group(0),
-        directory=fe_directory):
+        directory=root_directory):
         print(update)
         if isinstance(update, dict) and update.get('file_path'):
             component_file_path = update['file_path']
@@ -214,10 +214,10 @@ if __name__ == "__main__":
         watcher.stop()
 
     print('Starting...')
-    fe_directory = os.environ.get("FRONTEND_DIR", "/frontend_dir")
-    config = parse_config(fe_directory+"/coffee.config.json")
+    root_directory = os.environ.get("ROOT_DIR", "/mount")
+    config = parse_config(root_directory+"/coffee.config.json")
 
-    watcher = FileWatcher(fe_directory, watch_patterns=config['patterns'], ignore_patterns=["Coffee.tsx"])
+    watcher = FileWatcher(root_directory, watch_patterns=config['patterns'], ignore_patterns=["Coffee.tsx"])
     watcher.start()
     prev_inc = 0
 
@@ -225,7 +225,7 @@ if __name__ == "__main__":
         time.sleep(1)
         if prev_inc != watcher.last_modified_file_inc:
             print(f"File changed: {watcher.last_modified_file}")
-            process_file(watcher.last_modified_file, mount_dir=config['mount'], fe_directory=fe_directory)
+            process_file(watcher.last_modified_file, mount_dir=config['mount'], root_directory=root_directory)
             prev_inc = watcher.last_modified_file_inc
 
 

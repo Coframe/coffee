@@ -2,7 +2,7 @@ import os
 from openai import OpenAI
 import jinja2
 import re
-from agents.approx_costs import approx_costs
+from agents.approximate_costs import approximate_costs
 
 client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
@@ -97,7 +97,7 @@ class BaselineAgent():
             f.write(new_content)
 
         yield('-------------------')
-        cost = approx_costs(gpt_args, full_response)
+        cost = approximate_costs(gpt_args, full_response)
         yield(f"Cost: ${round(cost['total_cost'], 4)}, tokens: {cost['total_tokens']}")
 
         return

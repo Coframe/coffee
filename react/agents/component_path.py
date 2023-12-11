@@ -2,7 +2,7 @@ import os
 from openai import OpenAI
 import jinja2
 import json
-from agents.approx_costs import approx_costs
+from agents.approximate_costs import approximate_costs
 
 client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
@@ -71,7 +71,7 @@ class ComponentPathAgent():
                 chunked_delta = ""
         yield chunked_delta
         yield('------DONE---------')
-        cost = approx_costs(gpt_args, full_response)
+        cost = approximate_costs(gpt_args, full_response)
         yield(f"Total cost: ${round(cost['total_cost'], 2)}")
         json_response = json.loads(full_response)
         yield({"file_path": json_response['file_path']})
