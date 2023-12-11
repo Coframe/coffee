@@ -49,12 +49,17 @@ No dependencies, no setup.
 
 Just your React webapp normally, and then open another shell in the same directory and run:
 
-```
+```bash
 docker pull coframe/coffee:latest
 docker run -it -e OPENAI_API_KEY=${OPENAI_API_KEY} -v $(pwd) coframe/coffee:latest
 ```
 
-You can also build the image yourself from this repo.
+You can also build the image yourself from the /react directory:
+
+```bash
+./dev.sh build
+docker run -it -e OPENAI_API_KEY=${OPENAI_API_KEY} -v /path/to/client:/mount coffee_react_tag_watcher
+```
 
 ## How It Works
 
@@ -63,31 +68,36 @@ Coffee uses Docker to make sure that any agentic code it runs is fully isolated.
 When you run Coffee, it will listen for changes to `js/jsx/ts/tsx` files in your source directory, and if it detects a `<Coffee>` JSX component, it will kick off its magic!
 
 ```tsx
-<Coffee brew='ExampleComponent.tsx'>
+<Coffee parameter={parameter}>
   Here is where you put your prompt that Coffee will use to generate the first
   version of your desired component.
   <br />
   This is the same type of prompt that you'd use with any LLM like ChatGPT, so
   feel free to get creative and apply your favorite prompt engineering tricks.
+  <br />
+  Finally, you can also pass in any parameters you want from your parent component
+  by simply adding them as demonstrated above.
 </Coffee>
 ```
 
 Every time you save your source file, Coffee will look to see if there are any `<Coffee>` components which need brewing (if they're new or if their props or prompt have been updated). For each `<Coffee>` component the agent finds, Coffee will pass your parent component code, any existing child component code (`ExampleComponent.tsx` in the above example), your prompt, and any custom configuration to the OpenAI chat completions API in order to generate a new version of the target component.
 
+```tsx
+<Coffee parameter={parameter}>
+  To edit and update the brewed component, all you need to do is replace the prompt with
+  your desired changes. For instance, "make the button background darker".
+</Coffee>
+```
+
 The brewing process is currently a little slow, but we're working on several ways to make it significantly faster.
 
-Finally, once you're happy with your brewed component, you can add a `pour` prop to your `<Coffee>` component and save the file, which will automatically replace the `<Coffee>` component with the generated component.
+Finally, once you're happy with your brewed component, you can add a `pour="ComponentName.tsx"` prop to your `<Coffee>` component and save the file, which will automatically replace the `<Coffee>` component with the generated component.
 
 ```tsx
 export function Example() {
   return (
-    <Coffee
-      brew='MyButton.tsx'
-      title='Click Me'
-      onClick={() => console.log('clicked')}
-      pour
-    >
-      Big red button. Add generous padding and make it very noticeable.
+    <Coffee title="Click Me" onClick={() => console.log('clicked')} pour="MyButton.tsx">
+      Whatever you prompted Coffee to generate
     </Coffee>
   )
 }
@@ -99,7 +109,9 @@ In this example, we added a special `pour` prop. When you save this file, Coffee
 import MyButton from './MyButton'
 
 export function Example() {
-  return <MyButton title='Click Me' onClick={() => console.log('clicked')} />
+  return (
+    <MyButton title='Click Me' onClick={() => console.log('clicked')} />
+  )
 }
 ```
 
