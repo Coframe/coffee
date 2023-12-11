@@ -9,7 +9,6 @@
 <a href="https://github.com/coframe/coffee/issues"><img alt="GitHub Issues" src="https://img.shields.io/github/issues/coframe/coffee" /></a>
 <a href="https://github.com/coframe/coffee/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/badge/License-MIT-green.svg" /></a>
 <a href="https://github.com/coframe/coffee"><img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/coframe/coffee?style=social" /></a>
-<a href="https://discord.gg/coframe"><img alt="Discord" src="https://img.shields.io/discord/1179845843809996850" /></a>
 </p>
 
 ```
@@ -25,6 +24,7 @@
 - [How It Works](#how-it-works)
 - [TODO](#todo)
 - [Related](#related)
+- [Contributors](#core-contributors)
 - [License](#license)
 
 ## Features
@@ -138,6 +138,10 @@ You can keep iterating like this forever – you can never run out of Coffee! �
   - Really awesome, well-done project that we took a ton of inspiration from 💯
   - One of the areas we wanted to explore that differs from FastUI's approach is that many frontend developers aren't familiar with Python, so what would a DX look like that more closely resembles how frontend devs actually build and iterate on components?
 - TODO: look at FastUI again (maybe not generative), add twitter demos of design to UI, Cursor might be another good one here
+
+## Community
+
+Join us on [Discord](https://discord.gg/coframe) for support, to show off what you've brewed, and good vibes in general!
  
 ## Core Contributors
 
@@ -146,6 +150,8 @@ You can keep iterating like this forever – you can never run out of Coffee! �
 - [Tinah Hong](https://github.com/tunahfishy)
 - [Alex Korshuk](https://github.com/AlekseyKorshuk)
 - [Travis Fischer](https://github.com/transitive-bullshit)
+
+If you'd like to be a contributor, just submit a pull request! :)
 
 ## License
 
