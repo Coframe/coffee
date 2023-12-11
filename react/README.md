@@ -36,6 +36,12 @@
 - Generates clean, maintainable code
 - This is where the future of AI-assisted code-gen is headed! 🚀
 
+## Philosophy
+- Use your parameters, dependencies, data, etc.
+- Use your IDE and browser of choice, doesn't require a large migration or workflow change
+- Add new components AND edit existing ones
+- AI-driven development encourages smaller component files which is a better practice
+
 ## Try It
 
 No dependecies, no setup.
