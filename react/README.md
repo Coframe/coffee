@@ -1,8 +1,10 @@
-# Coffee ☕ <!-- omit from toc -->
+<div align="center">
+
+# Coffee &nbsp;☕ <!-- omit from toc -->
 
 — <ins>**Cof**</ins>rame <ins>**F**</ins>ront-<ins>**E**</ins>nd <ins>**E**</ins>ngineer
 
-> Quickly build and iterate on React components with AI!
+*Quickly build and iterate on your front end with AI!*
 
 <p>
 <a href="https://github.com/coframe/coffee/commits"><img alt="GitHub Last Commit" src="https://img.shields.io/github/last-commit/coframe/coffee" /></a>
@@ -10,6 +12,8 @@
 <a href="https://github.com/coframe/coffee/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/badge/License-MIT-green.svg" /></a>
 <a href="https://github.com/coframe/coffee"><img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/coframe/coffee?style=social" /></a>
 </p>
+<br />
+</div>
 
 ```
 <!-- TODO Animated demo of -->
@@ -24,7 +28,7 @@
 - [How It Works](#how-it-works)
 - [TODO](#todo)
 - [Related](#related)
-- [Contributors](#core-contributors)
+- [Core Contributors](#core-contributors)
 - [License](#license)
 
 ## Features
@@ -151,7 +155,9 @@ Join us on [Discord](https://discord.gg/coframe) for support, to show off what y
 - [Alex Korshuk](https://github.com/AlekseyKorshuk)
 - [Travis Fischer](https://github.com/transitive-bullshit)
 
-If you'd like to be a contributor, just submit a pull request! :)
+If you'd like to be a contributor, just submit a pull request!
+
+⚡ We are also hiring for generalist engineers and AI engineers who are passionate about the future of UX/AI. If you want to build this future with us, please shoot us a DM on Twitter!
 
 ## License
 
