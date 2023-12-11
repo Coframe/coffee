@@ -3,4 +3,3 @@ tiktoken
 jinja2
 ijson
 watchdog
-jurigged

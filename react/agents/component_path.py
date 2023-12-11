@@ -23,19 +23,21 @@ class ComponentPathAgent():
             {{import_statement}}
             ```
 
-            This is directory structure:
-            {{directory_structure}}
+            This is files in directory:
+            {{files}}
 
-            Output path to the file, you think is responsing for {{component}} and nothing else.
-            Output format is JSON:
-            {"file_path": "path/to/file"}
+            Output path to the file, you think is responsible for {{component}}, JSON:
+            {"file_path": "path/to/file.tsx"}
         """, trim_blocks=True, lstrip_blocks=True, autoescape=False)
         return template.render(**kwargs)
 
 
     def run(self, **args) -> None:
         yield('------PROMPT-------')
-        prompt = self.prompt(**args)
+        command = f"find {args['directory']} -type f \\( -name \"*.tsx\" -o -name \"*.jsx\" \\) -not -path \"*/node_modules/*\""
+        files = os.popen(command).read()
+
+        prompt = self.prompt(files=files, **args)
         yield(prompt)
         yield('------STREAM---------')
 

@@ -105,15 +105,12 @@ def proccess_caffeinated_component(file_path=None, file_content=None, caffeinate
         print(f"Could not find import statement for {component_name}")
         return
 
-    # TODO: get structure from watcher
-    command = f"find {fe_directory} -type f \\( -name \"*.tsx\" -o -name \"*.jsx\" \\) -not -path \"*/node_modules/*\""
-    directory_structure = os.popen(command).read()
     component_file_path = None
     for update in PathAgent.run(
         component=component_name,
         parent_file_path=file_path,
         import_statement=match.group(0),
-        directory_structure=directory_structure):
+        directory=fe_directory):
         print(update)
         if isinstance(update, dict) and update.get('file_path'):
             component_file_path = update['file_path']
