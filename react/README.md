@@ -28,6 +28,7 @@
 - [How It Works](#how-it-works)
 - [TODO](#todo)
 - [Related](#related)
+- [Community](#community)
 - [Core Contributors](#core-contributors)
 - [License](#license)
 
