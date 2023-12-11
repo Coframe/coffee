@@ -17,10 +17,7 @@ class BaselineAgent():
 
     def prompt(self, **kwargs):
         template = jinja2.Template("""
-            You are a pragmatic principal frontend engineer at Google. You are about to get instructions for code to write.
-            This code must be as simple and easy to understand, while still fully expressing the functionality required. 
-            Please note that the code should be complete and fully functional. NO PLACEHOLDERS. NO OMISSIONS.
-            DO NOT OMIT ANYTHING FOR BREVITY as the code you output will be written directly to a file, as-is.
+            You are an expert in the frontend development.
             Your task is to create a react component file according to the user query:
             {{user_query}}
 
@@ -31,7 +28,7 @@ class BaselineAgent():
             {% endfor %}
             ```
 
-            This is the parent component file: it uses the <Coffee> component to render the component that you should create.
+            This is parent component file, it uses <Coffee> component to render component that you should create.
             ```
             {% for line in parent_file_content.split("\n") %}
             {{ line }}
@@ -39,15 +36,7 @@ class BaselineAgent():
             ```
 
             Output whole new file for {{source_file}} within ``` and nothing else. It will be saved as is to the component file {{source_file}} and should work out of the box.
-            DO NOT add any new libraries or assume any classes that you don't see, other than those clearly used by the parent or child component. Put everything into single file: styles, types, etc.
-            Finally, please note that the code should be complete and fully functional. NO PLACEHOLDERS.
-            Do not add any comments. 
-            The code you output will be written directly to a file, as-is. Any omission or deviation will completely break the system.
-            DO NOT OMIT ANYTHING FOR BREVITY.
-            DO NOT OMIT ANYTHING FOR BREVITY.
-            DO NOT OMIT ANYTHING FOR BREVITY.
-            DO NOT OMIT ANYTHING FOR BREVITY.
-            DO NOT OMIT ANYTHING FOR BREVITY.
+            Do not add any new libraries. Put everything into single file: styles, types, etc.
         """, trim_blocks=True, lstrip_blocks=True, autoescape=False)
         return template.render(**kwargs)
 

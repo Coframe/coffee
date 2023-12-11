@@ -1,23 +1,7 @@
 import React, { Suspense, useState, useEffect } from 'react';
 
 const Coffee: React.FC<{ brew?: string|any, children: React.ReactNode }> = ({ brew, children, pass_children, ...props }) => {
-    const FallbackComponent = () => <div style={{width:"100%", textAlign:"center", fontSize:"32px"}}> ☕ Brewing
-                                        <span style={dotStyle}>.</span>
-                                        <span style={{...dotStyle, animationDelay: '0.2s'}}>.</span>
-                                        <span style={{...dotStyle, animationDelay: '0.4s'}}>.</span>
-                                        <style>
-                                        {`@keyframes dot {
-                                            0%, 20%, 100% {
-                                            opacity: 0;
-                                            }
-                                            50% {
-                                            opacity: 1;
-                                            }
-                                        }`}
-                                        </style></div>;
-    const dotStyle: React.CSSProperties = {
-        animation: 'dot 1s infinite',
-      };
+    const FallbackComponent = () => <div> ☕ Brewing "{children}" ... </div>;
     const [GeneratedComponent, setGeneratedComponent] = useState<React.ComponentType<any>>(()=>FallbackComponent);
     const [loaded, setLoaded] = useState(false);
     brew = brew || "./__brew__.tsx"
