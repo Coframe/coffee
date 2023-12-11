@@ -86,6 +86,8 @@ Every time you save your source file, Coffee will look to see if there are any `
 
 > ℹ️ Your application may display an error immediately after saving it the first time as the Coffee component has not been written to it by the Coffee agent yet. This is normal and will go away after the Coffee agent has had time to brew the component.
 
+Iterating on a component after it has been brewed is just as easy:
+
 ```tsx
 <Coffee parameter={parameter}>
   To edit and update the brewed component, all you need to do is replace the prompt with
