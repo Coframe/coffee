@@ -1,47 +1,39 @@
 import os
 from openai import OpenAI
 import jinja2
-import re
+import json
 import tiktoken
 
 client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
-class BaselineAgent():
+class ComponentPathAgent():
     """
-    Designed with the idea to be simple & stupid.
-    It rewrites the whole file from scratch.
-    No history. No JSON. No Reasoning.
+    Use LLM to deduce the path to the component file.
     """
     conversation_history: list = []
     cache = {}
 
     def prompt(self, **kwargs):
         template = jinja2.Template("""
-            You are an expert in the frontend development.
-            Your task is to create a react component file according to the user query:
-            {{user_query}}
+            Which file is used to render this component?
+            `{{component}}`
 
-            This is current content of component file:
+            This is import statement from {{parent_file_path}}:
             ```
-            {% for line in file_content.split("\n") %}
-            {{ line }}
-            {% endfor %}
+            {{import_statement}}
             ```
 
-            This is parent component file, it uses <Coffee> component to render component that you should create.
-            ```
-            {% for line in parent_file_content.split("\n") %}
-            {{ line }}
-            {% endfor %}
-            ```
+            This is directory structure:
+            {{directory_structure}}
 
-            Output whole new file for {{source_file}} within ``` and nothing else. It will be saved as is to the component file {{source_file}} and should work out of the box.
-            Do not add any new libraries. Put everything into single file: styles, types, etc.
+            Output path to the file, you think is responsing for {{component}} and nothing else.
+            Output format is JSON:
+            {"file_path": "path/to/file"}
         """, trim_blocks=True, lstrip_blocks=True, autoescape=False)
         return template.render(**kwargs)
 
 
-    def modify_file(self, **args) -> None:
+    def run(self, **args) -> None:
         yield('------PROMPT-------')
         prompt = self.prompt(**args)
         yield(prompt)
@@ -54,14 +46,14 @@ class BaselineAgent():
         gpt_args = dict(
             model="gpt-4-1106-preview",
             messages=self.conversation_history,
-            response_format={"type": "text"},
+            response_format={"type": "json_object"},
             stream=True,
         )
 
         response_stream = self._cached_generator(
             fx = client.chat.completions.create,
             fx_args = gpt_args,
-            cache_key = hash(args['user_query'])
+            cache_key = hash(args['component'])+len(self.conversation_history)
         )
 
         full_response = ""
@@ -76,30 +68,11 @@ class BaselineAgent():
                 yield chunked_delta
                 chunked_delta = ""
         yield chunked_delta
-        # find and extract content within ``` using regex
-        pattern = r'```.*?\n(.*?)```'
-        matches = re.findall(pattern, full_response, re.DOTALL)
-        if(len(matches) == 0):
-            yield("No code found in response")
-            return
-
-        new_content = matches[0]
-
-        if(new_content == args['file_content']):
-            yield('No changes')
-            return
-
-        yield('------FILE-------')
-        yield(new_content)
-
-        # save new file
-        with open(args['source_file'], "w") as f:
-            f.write(new_content)
-
-        yield('-------------------')
+        yield('------DONE---------')
         cost = self._approx_costs(gpt_args, full_response)
-        yield(f"Cost: ${round(cost['total_cost'], 4)}, tokens: {cost['total_tokens']}")
-
+        yield(f"Total cost: ${round(cost['total_cost'], 2)}")
+        json_response = json.loads(full_response)
+        yield({"file_path": json_response['file_path']})
         return
 
     def _cached_generator(self, fx=None, fx_args=None, cache_key=None):
