@@ -52,6 +52,8 @@ docker pull coframe/coffee:latest
 docker run -it -e OPENAI_API_KEY=${OPENAI_API_KEY} -v $(pwd) coframe/coffee:latest
 ```
 
+You can also build the image yourself from this repo.
+
 ## How It Works
 
 Coffee uses Docker to make sure that any agentic code it runs is fully isolated. Coffee is currently implemented in Python (but you don't need to touch Python to use Coffee), and the code-generation agent is relatively simple.
