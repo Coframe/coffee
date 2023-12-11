@@ -145,7 +145,9 @@ You can keep iterating like this forever – you can never run out of Coffee! �
 
 ## Community
 
-Join us on [Discord](https://discord.gg/coframe) for support, to show off what you've brewed, and good vibes in general!
+Join us on [Discord](https://discord.gg/coframe) for support, to show off what you've brewed, and good vibes in general.
+
+Follow us on [Twitter](https://twitter.com/coframe_ai) for new feature releases, product updates, and other exciting news!
  
 ## Core Contributors
 
@@ -157,7 +159,7 @@ Join us on [Discord](https://discord.gg/coframe) for support, to show off what y
 
 If you'd like to be a contributor, just submit a pull request!
 
-⚡ We are also hiring for generalist engineers and AI engineers who are passionate about the future of UX/AI. If you want to build this future with us, please shoot us a DM on Twitter!
+⚡ We are also hiring for generalist engineers and AI engineers who are passionate about the future of UX/AI. Coffee is just one of the many exciting things we have brewing. If you want to build this future with us, please shoot us a DM on [Twitter](https://twitter.com/coframe_ai)!
 
 ## License
 
