@@ -23,6 +23,8 @@
 </Coffee>
 ```
 
+> Coffee caffeinates your frontend development workflow with AI. This project is intended to be more than just a nice demo, but rather be an ergonomic tool that can write and interact with production-quality code.
+
 - [Features](#features)
 - [Try It](#try-it)
 - [How It Works](#how-it-works)
@@ -35,7 +37,7 @@
 ## Features
 
 - Works with any React codebase including Next.js, Remix, etc.
-- Realiable enough for most standard UI components
+- Reliable enough for most standard UI components
 - Supports most simple prop types (data, callbacks, etc)
 - Uses the same DX for both edit existing components as well as creating new components from scratch
 - Generates clean, maintainable code
@@ -141,9 +143,11 @@ You can keep iterating like this forever – you can never run out of Coffee! �
 - [v0](https://v0.dev) - Amazing generative React playground by [Vercel](https://vercel.com)
   - We're hoping they OSS it soon in order to open it up to a wider audience 🥹
   - We were excited to experiment with a DX that was more natively integrated into a frontend developer's existing workflow, so we could better understand the tradeoffs between two approaches.
-- [FastUI](https://github.com/pydantic/FastUI) - Generative UIs from a Python source of truth
-  - Really awesome, well-done project that we took a ton of inspiration from 💯
-  - One of the areas we wanted to explore that differs from FastUI's approach is that many frontend developers aren't familiar with Python, so what would a DX look like that more closely resembles how frontend devs actually build and iterate on components?
+- [Screenshot to Code](https://github.com/abi/screenshot-to-code) - OSS project showcasing the power of GPT-V for UI generation 🤯
+  - One of the first projects to showcase GPT-V's capabilities for UI generation from an image (besides [GDB's timeless GPT-4 announcement](https://www.youtube.com/live/outcGtbnMuQ?feature=shared&t=978), of course!)
+- [Draw a UI](https://github.com/SawyerHood/draw-a-ui) - ditto!
+- [Cursor](https://cursor.sh/) - AI-native IDE that the Coframe team uses and loves 🥰
+  - Coffee can be used in any IDE, but we're huge fans of Cursor and are excited to see what they launch next!
 - TODO: look at FastUI again (maybe not generative), add twitter demos of design to UI, Cursor might be another good one here
 
 ## Community
