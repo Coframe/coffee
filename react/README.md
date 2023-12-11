@@ -137,6 +137,7 @@ You can keep iterating like this forever – you can never run out of Coffee! �
 - [FastUI](https://github.com/pydantic/FastUI) - Generative UIs from a Python source of truth
   - Really awesome, well-done project that we took a ton of inspiration from 💯
   - One of the areas we wanted to explore that differs from FastUI's approach is that many frontend developers aren't familiar with Python, so what would a DX look like that more closely resembles how frontend devs actually build and iterate on components?
+- TODO: look at FastUI again (maybe not generative), add twitter demos of design to UI, Cursor might be another good one here
  
 ## Core Contributors
 
