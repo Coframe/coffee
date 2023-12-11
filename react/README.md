@@ -148,7 +148,6 @@ You can keep iterating like this forever – you can never run out of Coffee! �
 - [Draw a UI](https://github.com/SawyerHood/draw-a-ui) - ditto!
 - [Cursor](https://cursor.sh/) - AI-native IDE that the Coframe team uses and loves 🥰
   - Coffee can be used in any IDE, but we're huge fans of Cursor and are excited to see what they launch next!
-- TODO: look at FastUI again (maybe not generative), add twitter demos of design to UI, Cursor might be another good one here
 
 ## Community
 
