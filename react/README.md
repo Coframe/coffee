@@ -50,8 +50,7 @@ No dependencies, no setup.
 Just your React webapp normally, and then open another shell in the same directory and run:
 
 ```
-docker pull coframe/coffee:latest
-docker run -it -e OPENAI_API_KEY=${OPENAI_API_KEY} -v $(pwd) coframe/coffee:latest
+docker run -it -e OPENAI_API_KEY=${OPENAI_API_KEY} -v $(pwd):/mount coframe/coffee:latest
 ```
 
 You can also build the image yourself from this repo.
@@ -154,7 +153,7 @@ You can keep iterating like this forever – you can never run out of Coffee! �
 Join us on [Discord](https://discord.gg/coframe) for support, to show off what you've brewed, and good vibes in general.
 
 Follow us on [Twitter](https://twitter.com/coframe_ai) for new feature releases, product updates, and other exciting news!
- 
+
 ## Core Contributors
 
 - [Pavlo Razumovskyi](https://github.com/1um) (lead)

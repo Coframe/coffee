@@ -10,7 +10,7 @@ run_docker() {
     exit 1
   fi
   local abs_working_dir=$(realpath "$working_dir")
-  docker run -it -v "${abs_working_dir}":/frontend_dir -v "$(pwd)":/app -e OPENAI_API_KEY=$OPENAI_API_KEY $IMAGE_NAME
+  docker run -it -v "${abs_working_dir}":/mount -v "$(pwd)":/app -e OPENAI_API_KEY=$OPENAI_API_KEY $IMAGE_NAME
 }
 
 usage() {
