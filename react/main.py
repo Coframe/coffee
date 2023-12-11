@@ -14,30 +14,25 @@ def process_file(file_path, mount_dir="./components", fe_directory=None):
     with open(file_path, 'r') as file:
         file_content = file.read()
 
-    # Extract <Coffee> tag
+    # Extract and process <Coffee> tag
     coffee_tag = extract_coffee_tag(file_content)
     if coffee_tag:
         print(f"<Coffee> tag found in {file_path}")
-        working_dir = os.path.join(os.path.dirname(file_path), mount_dir)
-        mount('./mount', working_dir)
-        process_coffee_tag(file_path, working_dir=working_dir, file_content=file_content, coffee_tag=coffee_tag, mount_dir=mount_dir)
-        return
+        process_coffee_tag(coffee_tag=coffee_tag, file_path=file_path, file_content=file_content, mount_dir=mount_dir)
 
-    # Extract components with <Component coffee="...">
+    # Extract and process <Component coffee="..."> caffeniated components
     caffeinated_component = extract_caffeinated_component(file_content)
     if caffeinated_component:
         print(f"Caffeinated component found in {file_path}")
         proccess_caffeinated_component(file_path, file_content=file_content, caffeinated_component=caffeinated_component, fe_directory=fe_directory)
         return
 
-    print('Done')
-
-def process_coffee_tag(file_path, working_dir, file_content, coffee_tag, mount_dir):
+def process_coffee_tag(coffee_tag=None, file_path=None, file_content=None, mount_dir=None):
+    """
+    Brews or Pour a <Coffee> components.
+    """
+    working_dir = os.path.join(os.path.dirname(file_path), mount_dir)
     coffee_import_statement = f"import Coffee from '{mount_dir}/Coffee'\n"
-    file_content, modfied = update_imports(file_content, coffee_import_statement, upsert=True)
-    if modfied:
-        with open(file_path, 'w') as file:
-            file.write(file_content)
 
     brew_path = os.path.join(working_dir, '__brew__.tsx')
     brew_content = ""
@@ -45,27 +40,39 @@ def process_coffee_tag(file_path, working_dir, file_content, coffee_tag, mount_d
         with open(brew_path, 'r') as brew_file:
             brew_content = brew_file.read()
 
-    prompt = coffee_tag['children']
-    pour_path = coffee_tag['props'].get('pour', None)
+    pour = coffee_tag['props'].get('pour', None)
 
-    if pour_path:
-        print('Pouring to', pour_path)
-        replace_coffee_tag_with_component(file_path, file_content, coffee_tag, pour_path=pour_path, mount_dir=mount_dir, coffee_import_statement=coffee_import_statement, brew_content=brew_content)
-        umount('./mount', working_dir)
+    if(pour):
+        print(f"Pouring component to {pour}...")
+        set_mount('./mount', working_dir, False)
+        pour_component(file_path=file_path, file_content=file_content, coffee_tag=coffee_tag, pour_path=pour, mount_dir=mount_dir, coffee_import_statement=coffee_import_statement, brew_content=brew_content)
     else:
-        print('Brewing new component...')
-        for update in CodeAgent.modify_file(source_file = brew_path, user_query=prompt, file_content=brew_content, parent_file_content=file_content):
-            print(update)
+        print("Brewing new component...")
+        set_mount('./mount', working_dir, True)
+        brew_component(file_path=file_path, file_content=file_content, coffee_tag=coffee_tag, coffee_import_statement=coffee_import_statement, brew_content=brew_content, brew_path=brew_path)
 
-def replace_coffee_tag_with_component(file_path, file_content, coffee_tag, pour_path=None, attributes_to_remove=['brew', 'pour'], mount_dir=None, coffee_import_statement=None, brew_content=None):
+    return
+
+def brew_component(file_path=None, file_content=None, coffee_tag=None, coffee_import_statement=None, brew_content=None, brew_path=None):
+    file_content, modfied = set_import(file_content, coffee_import_statement, True)
+    if modfied:
+        with open(file_path, 'w') as file:
+            file.write(file_content)
+
+    prompt = coffee_tag['children']
+
+    for update in CodeAgent.modify_file(source_file = brew_path, user_query=prompt, file_content=brew_content, parent_file_content=file_content):
+        print(update)
+
+
+def pour_component(file_path=None, file_content=None, coffee_tag=None, pour_path=None, mount_dir=None, coffee_import_statement=None, brew_content=None, attributes_to_remove=['brew', 'pour']):
     """
     Replaces the <Coffee> tag with <BrewedComponent>.
     1. Replace <Coffee ...> </Coffee> tag with <ComponentName ...props />
     2. Append import ComponentName from './coffee/brew/ComponentName' after the last import statement.
     """
-    print(f'Replacing <Coffee> with {file_path} component...')
 
-    # Update tag
+    # Replace tag
     component_name = pour_path.split('.')[0]
     coffee_start, coffee_end = coffee_tag['match'].span()
     attributes = coffee_tag["attributes"]
@@ -75,22 +82,22 @@ def replace_coffee_tag_with_component(file_path, file_content, coffee_tag, pour_
 
     # Update import statements
     import_statement = f"import {component_name} from '{mount_dir}/{component_name}'\n"
-    file_content, _ = update_imports(file_content, import_statement, upsert=True)
-    file_content, _ = update_imports(file_content, coffee_import_statement, remove=True)
+    file_content, _ = set_import(file_content, import_statement, True)
+    file_content, _ = set_import(file_content, coffee_import_statement, False)
 
     # Create component file
     component_file_path = os.path.join(os.path.dirname(file_path), mount_dir, pour_path)
     with open(component_file_path, 'w') as component_file:
         component_file.write(brew_content)
 
+    # Update parent file
     with open(file_path, 'w') as file:
         file.write(file_content)
 
     print("Replacement complete.")
 
-def proccess_caffeinated_component(file_path, file_content, caffeinated_component, fe_directory):
-    component_name = caffeinated_component['match'].group(1)
-
+def proccess_caffeinated_component(file_path=None, file_content=None, caffeinated_component=None, fe_directory=None):
+    component_name = caffeinated_component['tag']
     import_pattern = rf"({component_name})(.*?)from\s[\'\"](.*?)[\'\"]"
     match = re.search(import_pattern, file_content, re.DOTALL)
 
@@ -98,7 +105,7 @@ def proccess_caffeinated_component(file_path, file_content, caffeinated_componen
         print(f"Could not find import statement for {component_name}")
         return
 
-    # TODO: move to watcher:
+    # TODO: get structure from watcher
     command = f"find {fe_directory} -type f \\( -name \"*.tsx\" -o -name \"*.jsx\" \\) -not -path \"*/node_modules/*\""
     directory_structure = os.popen(command).read()
     component_file_path = None
@@ -148,20 +155,21 @@ def extract_caffeinated_component(file_content):
     """
     Extracts the first <MyComponent coffee="..."> tag from the given file content.
     """
-    pattern = r'<(\w+)\s([^>/]*)(?:>(.*?)</\1>|/>)'
+    pattern = r'<(\w+)\s?([^>/]*?coffee=["\'][^"\']+["\'][^>/]*)(?:>(.*?)</\1>|/>)'
     match = re.search(pattern, file_content, re.DOTALL)
+
     if match:
-        tag_name, attributes, content = match.groups()
-        if 'coffee' in attributes:
-            props = {m[0]: m[1] or True for m in re.findall(r'(\w+)(?:=["\']([^"\']+)["\']|\b)', attributes)}
-            return {'match': match, 'props': props, 'children': content.strip() if content else "", 'attributes': attributes}
+        tag, attributes, content = match.groups()
+        props = {m[0]: m[1] or True for m in re.findall(r'(\w+)(?:=["\']([^"\']+)["\']|\b)', attributes)}
+        return {'match': match, 'tag':tag, 'props': props, 'children': content.strip() if content else "", 'attributes': attributes}
 
     return None
 
-def update_imports(file_content, import_statement, upsert=False, remove=False):
+def set_import(file_content, import_statement, upsert=True):
     """
     Updates the import statements in file_content with the given import_statement.
     """
+    remove = not upsert
     import_index = file_content.find(import_statement)
     modified = False
 
@@ -175,8 +183,22 @@ def update_imports(file_content, import_statement, upsert=False, remove=False):
 
     return file_content, modified
 
+def set_mount(source, target, mount=True):
+    """
+    Mount or unmount the source directory to the target directory.
+    """
+    if mount and not os.path.exists(target):
+        os.makedirs(target)
+    for item in os.listdir(source):
+        s = os.path.join(source, item)
+        d = os.path.join(target, item)
+        if os.path.isdir(s):
+            os.symlink(s, d) if mount else os.remove(d)
+        else:
+            shutil.copy2(s, d) if mount else os.remove(d)
+
 def parse_config(path):
-    """Read and parse json file at path."""
+    """Reads and parses config file"""
     default_config = {
         "mount": "./components",
         "patterns": ['**/*.tsx', '**/*.jsx']
@@ -186,36 +208,6 @@ def parse_config(path):
             return dict(default_config, **json.load(file))
     except FileNotFoundError:
         return default_config
-
-def mount(source, target):
-    """
-    Copy all files from source to target
-    """
-    if not os.path.exists(target):
-        os.makedirs(target)
-    for item in os.listdir(source):
-        s = os.path.join(source, item)
-        d = os.path.join(target, item)
-        if os.path.isdir(s):
-            print(f"Copying directory {s} to {d}")
-            shutil.copytree(s, d, dirs_exist_ok=True)
-        else:
-            print(f"Copying file {s} to {d}")
-            shutil.copy2(s, d)
-
-def umount(source, target):
-    """
-    Delete all files from target that are in source
-    """
-    for item in os.listdir(source):
-        s = os.path.join(source, item)
-        d = os.path.join(target, item)
-        if os.path.isdir(s):
-            print(f"Deleting directory {d}")
-            shutil.rmtree(d)
-        else:
-            print(f"Deleting file {d}")
-            os.remove(d)
 
 watcher = None
 
@@ -229,7 +221,6 @@ if __name__ == "__main__":
     config = parse_config(fe_directory+"/coffee.config.json")
 
     watcher = FileWatcher(fe_directory, watch_patterns=config['patterns'], ignore_patterns=["Coffee.tsx"])
-
     watcher.start()
     prev_inc = 0
 

@@ -1,4 +1,3 @@
-import { debug } from 'console';
 import React, { Suspense, useState, useEffect } from 'react';
 
 const Coffee: React.FC<{ brew?: string|any, children: React.ReactNode }> = ({ brew, children, pass_children, ...props }) => {
@@ -38,17 +37,5 @@ const Coffee: React.FC<{ brew?: string|any, children: React.ReactNode }> = ({ br
         </Suspense>
     );
 };
-
-// export const withCoffee = (component) => ({coffee, children, ...props}) => {
-//     useEffect(() => {
-//         let rendered = component({children: children, ...props})
-//         debugger
-//         console.log({filename: rendered._source.fileName})
-//     }, [])
-
-//     return <Coffee brew={component} {...props} pass_children={children}>
-//         {coffee}
-//     </Coffee>
-// };
 
 export default Coffee;
