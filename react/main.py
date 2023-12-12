@@ -7,6 +7,7 @@ from file_watcher import FileWatcher
 import shutil
 import json
 from pydantic import BaseModel
+from typing import Optional
 
 CodeAgent = BaselineAgent()
 PathAgent = ComponentPathAgent()
@@ -18,7 +19,7 @@ class FileContext(BaseModel):
     root_directory: str
     mount_dir: str
     working_dir: str
-
+    example_content: Optional[str] = None
 
 class BrewContext(FileContext):
     brew_path: str
@@ -27,12 +28,22 @@ class BrewContext(FileContext):
     coffee_tag: dict
 
 
-def process_file(file_path, mount_dir=None, root_directory=None):
+def process_file(file_path, mount_dir=None, root_directory=None, example=None):
     """
     Detects and processes <Coffee> and <Component coffee="..."> tags.
     """
     with open(file_path, "r") as file:
         file_content = file.read()
+
+    if example:
+        example_path = os.path.join(root_directory, "./"+example)
+        try:
+            with open(example_path, "r") as example_file:
+                example_content = example_file.read()
+        except FileNotFoundError:
+            example_content = None
+            print(f"Could not find example file at {example_path}")
+            return
 
     ctx = FileContext(
         file_path=file_path,
@@ -40,6 +51,7 @@ def process_file(file_path, mount_dir=None, root_directory=None):
         root_directory=root_directory,
         mount_dir=mount_dir,
         working_dir=os.path.join(os.path.dirname(file_path), mount_dir),
+        example_content=example_content,
     )
 
     # Extract and process <Coffee> tag
@@ -108,6 +120,7 @@ def brew_component(ctx: BrewContext = None):
         user_query=prompt,
         file_content=ctx.brew_content,
         parent_file_content=file_content,
+        example_content=ctx.example_content,
     ):
         print(update)
 
@@ -193,6 +206,7 @@ def proccess_caffeinated_component(caffeinated_component=None, ctx: FileContext 
         source_file=component_file_path,
         file_content=component_file_content,
         parent_file_content=ctx.file_content,
+        example_content=ctx.example_content,
     ):
         print(update)
 
@@ -236,7 +250,7 @@ def set_import(file_content, import_statement, upsert=True):
         )
         modified = True
     if upsert and import_index == -1:
-        insert_index = file_content.find("\n", file_content.rfind("import "))
+        insert_index = file_content.find("\n", file_content.find("from", file_content.rfind("import ")))
         file_content = (
             file_content[: insert_index + 1]
             + import_statement
@@ -267,7 +281,7 @@ def parse_config(path):
     Reads and parses config file
     """
 
-    default_config = {"mount": "./components", "patterns": ["**/*.tsx", "**/*.jsx"]}
+    default_config = {"mount": "./components", "patterns": ["**/*.tsx"], "example": None}
     try:
         with open(path, "r") as file:
             return dict(default_config, **json.load(file))
@@ -302,5 +316,6 @@ if __name__ == "__main__":
                 watcher.last_modified_file,
                 mount_dir=config["mount"],
                 root_directory=root_directory,
+                example=config["example"],
             )
             prev_inc = watcher.last_modified_file_inc

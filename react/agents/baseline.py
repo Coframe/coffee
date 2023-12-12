@@ -43,6 +43,15 @@ class BaselineAgent:
             {% endfor %}
             ```
 
+            {% if example_content %}
+                Follow similar structure and patterns of this example component:
+                ```
+                {% for line in example_content.split("\n") %}
+                {{ line }}
+                {% endfor %}
+                ```
+            {% endif %}
+
             Output whole new file for {{source_file}} within ``` and nothing else. It will be saved as is to the component file {{source_file}} and should work out of the box.
 
             DO NOT add any new libraries or assume any classes that you don't see, other than those clearly used by the parent or child component. Put everything into single file: styles, types, etc.

@@ -1,3 +1,5 @@
+"use client";
+
 import React, { Suspense, useState, useEffect } from 'react';
 
 const Coffee: React.FC<{ brew?: string|any, children: React.ReactNode }> = ({ brew, children, pass_children, ...props }) => {
