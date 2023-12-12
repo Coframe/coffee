@@ -50,7 +50,6 @@ No dependencies, no setup.
 Just your React webapp normally, and then open another shell in the same directory and run:
 
 ```bash
-docker pull coframe/coffee:latest
 docker run -it -e OPENAI_API_KEY=${OPENAI_API_KEY} -v $(pwd):/mount coframe/coffee:latest
 ```
 
@@ -102,9 +101,9 @@ Finally, once you're happy with your brewed component, you can add a `pour="Comp
 ```tsx
 export function Example() {
   return (
-    <Coffee 
-      title="Click Me" 
-      onClick={() => console.log('clicked')} 
+    <Coffee
+      title="Click Me"
+      onClick={() => console.log('clicked')}
       pour="MyButton.tsx"
     >
       Whatever you prompted Coffee to generate
@@ -172,7 +171,7 @@ You can keep iterating like this forever â€“ you can never run out of Coffee! ðŸ
 Join us on [Discord](https://discord.gg/coframe) for support, to show off what you've brewed, and good vibes in general.
 
 Follow us on [Twitter](https://twitter.com/coframe_ai) for new feature releases, product updates, and other exciting news!
- 
+
 ## Core Contributors
 
 - [Pavlo Razumovskyi](https://github.com/1um) (lead)
