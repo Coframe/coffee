@@ -29,7 +29,7 @@ if [ "$1" = "build" ]; then
 fi
 
 if [ "$1" = "lint" ]; then
-  docker run -it --init -v "$(pwd)":/app $IMAGE_NAME ruff check . --fix --watch
+  docker run -it --init -v "$(pwd)":/app $IMAGE_NAME sh -c "ruff format . && ruff check . --fix --watch"
   exit 0
 fi
 
