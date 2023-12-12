@@ -33,6 +33,12 @@ if [ "$1" = "lint" ]; then
   exit 0
 fi
 
+if [ "$1" = "push" ]; then
+  docker build -t coframe/coffee .
+  docker push coframe/coffee:latest
+  exit 0
+fi
+
 
 if [ -z "$1" ]; then
   echo "Error: WORKING_DIR is mandatory for running the container."
