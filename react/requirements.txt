@@ -1,5 +1,6 @@
 openai
 tiktoken
 jinja2
-ijson
 watchdog
+pydantic
+ruff

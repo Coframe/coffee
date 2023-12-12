@@ -38,11 +38,17 @@ MODEL_COST_PER_1K_TOKENS = {
     "gpt-3.5-turbo-16k-0613-completion": 0.004,
 }
 
+
 def approximate_costs(fx_args, full_response):
-    encoding = tiktoken.encoding_for_model(fx_args['model'])
+    encoding = tiktoken.encoding_for_model(fx_args["model"])
     input_tokens = 0
-    for message in fx_args['messages']:
-        input_tokens += 3 + len(encoding.encode(message['content']))
+    for message in fx_args["messages"]:
+        input_tokens += 3 + len(encoding.encode(message["content"]))
     output_tokens = 3 + len(encoding.encode(full_response))
-    total_cost = MODEL_COST_PER_1K_TOKENS[fx_args['model']] * input_tokens / 1000 + MODEL_COST_PER_1K_TOKENS[fx_args['model'] + '-completion'] * output_tokens / 1000
+    total_cost = (
+        MODEL_COST_PER_1K_TOKENS[fx_args["model"]] * input_tokens / 1000
+        + MODEL_COST_PER_1K_TOKENS[fx_args["model"] + "-completion"]
+        * output_tokens
+        / 1000
+    )
     return dict(total_cost=total_cost, total_tokens=input_tokens + output_tokens)

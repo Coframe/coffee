@@ -15,15 +15,21 @@ run_docker() {
 
 usage() {
   echo "===================="
-  echo "Usage: ./dev [build] WORKING_DIR"
+  echo "Usage: ./dev [build|lint] WORKING_DIR"
   echo "Options:"
   echo "  build: Build Docker image"
+  echo "  lint: Run linter"
   echo "WORKING_DIR is the path to the frontend directory to be mounted when running the container"
   echo "===================="
 }
 
 if [ "$1" = "build" ]; then
   docker build -t $IMAGE_NAME .
+  exit 0
+fi
+
+if [ "$1" = "lint" ]; then
+  docker run -it --init -v "$(pwd)":/app $IMAGE_NAME sh -c "ruff format . && ruff check . --fix --watch"
   exit 0
 fi
 
