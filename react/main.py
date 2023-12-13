@@ -165,6 +165,16 @@ def pour_component(
     with open(ctx.file_path, "w") as file:
         file.write(file_content)
 
+    # Update component file to reflect the new name
+    for update in CodeAgent.modify_file(
+        source_file=component_file_path,
+        user_query=f'Update component file to reflect the new component name: {component_name}',
+        file_content=ctx.brew_content,
+        parent_file_content=file_content,
+        example_content=ctx.example_content,
+    ):
+        print(update)
+
     print("Replacement complete.")
 
 
