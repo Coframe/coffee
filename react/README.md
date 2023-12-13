@@ -15,7 +15,7 @@
 <br />
 </div>
 
-https://github.com/Coframe/coframe-public/assets/25165841/cc35fd23-80e2-4446-bdd0-32d9a60c1061
+https://github.com/Coframe/coframe-public/assets/25165841/b0ed9a72-7de8-480d-89b6-32e0bb4e15c5
 
 > Coffee caffeinates your frontend development workflow with AI. This project is intended to be more than just a nice demo, but rather be an ergonomic tool that can write and interact with production-quality code.
 
