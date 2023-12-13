@@ -15,7 +15,7 @@
 <br />
 </div>
 
-https://github.com/Coframe/coframe-public/assets/25165841/03e731b8-5583-409c-ad75-99d6fee32d3e
+https://github.com/Coframe/coframe-public/assets/25165841/cc35fd23-80e2-4446-bdd0-32d9a60c1061
 
 > Coffee caffeinates your frontend development workflow with AI. This project is intended to be more than just a nice demo, but rather be an ergonomic tool that can write and interact with production-quality code.
 
@@ -66,16 +66,16 @@ When you run Coffee, it will listen for changes to `js/jsx/ts/tsx` files in your
 <Coffee parameter={parameter}>
   Here is where you put your prompt that Coffee will use to generate the first
   version of your desired component.
-  <br />
+
   This is the same type of prompt that you'd use with any LLM like ChatGPT, so
   feel free to get creative and apply your favorite prompt engineering tricks.
-  <br />
+
   Finally, you can also pass in any parameters you want from your parent component
   by simply adding them as demonstrated above.
 </Coffee>
 ```
 
-Every time you save your source file, Coffee will look to see if there are any `<Coffee>` components which need brewing (if they're new or if their props or prompt have been updated). For each `<Coffee>` component the agent finds, Coffee will pass your parent component code, any existing child component code (`ExampleComponent.tsx` in the above example), your prompt, and any custom configuration to the OpenAI chat completions API in order to generate a new version of the target component.
+Every time you save your source file, Coffee will look to see if there are any `<Coffee>` components which need brewing (if they're new or if their props or prompt have been updated). For each `<Coffee>` component the agent finds, Coffee will pass your parent component code, any existing child component code, your prompt, and any custom configuration to the OpenAI chat completions API in order to generate a new version of the target component.
 
 > ℹ️ Your application may display an error immediately after saving it the first time as the Coffee component has not been written to it by the Coffee agent yet. This is normal and will go away after the Coffee agent has had time to brew the component.
 
@@ -122,7 +122,7 @@ Now you have a fully functional, reusable React component that's ready to use in
 
 **The coolest part of Coffee, however, is that you can edit existing React components just as easily as creating new components from scratch.**
 
-https://github.com/Coframe/coframe-public/assets/25165841/e00ad1fb-d370-4389-b537-bcb288d7664e
+https://github.com/Coframe/coframe-public/assets/25165841/3fb67edb-a6a2-4a1c-a48a-00bd74168c1e
 
 Let's say that you want to edit the MyButton (or any other) component. All you need to do is add the `coffee="description of change to make"` prop:
 
@@ -141,14 +141,13 @@ You can keep iterating like this forever – you can never run out of Coffee! �
 ## TODO
 
 - [ ] Add basic tests and GitHub CI
-- [ ] Run `prettier` on generated code (fail gracefully if not installed)
+- [ ] Run `prettier` on generated code
 - [ ] Variety of agents: faster/smarter/cheaper
-- [ ] Add visuals and actual data to prompt (GPT-4V)
+- [ ] Add visuals and data feedback loop from componennt to agent (GPT-4V)
 - [ ] Support custom prompt
 - [ ] Support custom agents
 - [ ] Expand support for `coffee.config.json` config
-- [ ] Consider converting Coffee to be a native TS module
-  - This would be really nice for cleanly integrating with build systems tools like Next.js, webpack, Remix, Prettier, ESlint, etc.
+- [ ] Integrate nativly with tools like Next.js, webpack, Remix, Prettier, ESlint, etc.
 - [ ] Add support for other popular frontend frameworks (Vue, Svelte, etc)
 
 ## Related
@@ -170,7 +169,7 @@ Follow us on [Twitter](https://twitter.com/coframe_ai) for new feature releases,
 
 ## Core Contributors
 
-https://github.com/Coframe/coframe-public/assets/25165841/65ffab30-5c94-40fe-b1e9-d584b1481722
+https://github.com/Coframe/coframe-public/assets/25165841/2f355984-2c6a-4773-8601-9ff156bbfb0d
 
 If you'd like to be a contributor, just submit a pull request!
 
