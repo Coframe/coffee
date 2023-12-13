@@ -51,7 +51,7 @@ You can also build the image yourself from the /react directory:
 
 ```bash
 ./dev.sh build
-docker run -it -e OPENAI_API_KEY=${OPENAI_API_KEY} -v /path/to/client:/mount coffee_react_tag_watcher
+./dev.sh ../path/to/frontend
 ```
 
 You can keep an eye on the terminal running the Docker container to see what Coffee is up to. It's fun to see the code being generated!
