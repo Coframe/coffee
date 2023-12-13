@@ -15,13 +15,7 @@
 <br />
 </div>
 
-```
-<!-- TODO Animated demo of -->
-<Coffee brew="Contributors.tsx" contributors={contributors}>
-  Show list of contributors using circle images in horisontal line.
-  On hover show name.
-</Coffee>
-```
+https://github.com/Coframe/coframe-public/assets/25165841/03e731b8-5583-409c-ad75-99d6fee32d3e
 
 > Coffee caffeinates your frontend development workflow with AI. This project is intended to be more than just a nice demo, but rather be an ergonomic tool that can write and interact with production-quality code.
 
@@ -50,7 +44,6 @@ No dependencies, no setup.
 Just your React webapp normally, and then open another shell in the same directory and run:
 
 ```bash
-docker pull coframe/coffee:latest
 docker run -it -e OPENAI_API_KEY=${OPENAI_API_KEY} -v $(pwd):/mount coframe/coffee:latest
 ```
 
@@ -102,9 +95,9 @@ Finally, once you're happy with your brewed component, you can add a `pour="Comp
 ```tsx
 export function Example() {
   return (
-    <Coffee 
-      title="Click Me" 
-      onClick={() => console.log('clicked')} 
+    <Coffee
+      title="Click Me"
+      onClick={() => console.log('clicked')}
       pour="MyButton.tsx"
     >
       Whatever you prompted Coffee to generate
@@ -128,6 +121,8 @@ export function Example() {
 Now you have a fully functional, reusable React component that's ready to use in production.
 
 **The coolest part of Coffee, however, is that you can edit existing React components just as easily as creating new components from scratch.**
+
+https://github.com/Coframe/coframe-public/assets/25165841/e00ad1fb-d370-4389-b537-bcb288d7664e
 
 Let's say that you want to edit the MyButton (or any other) component. All you need to do is add the `coffee="description of change to make"` prop:
 
@@ -172,14 +167,10 @@ You can keep iterating like this forever â€“ you can never run out of Coffee! ðŸ
 Join us on [Discord](https://discord.gg/coframe) for support, to show off what you've brewed, and good vibes in general.
 
 Follow us on [Twitter](https://twitter.com/coframe_ai) for new feature releases, product updates, and other exciting news!
- 
+
 ## Core Contributors
 
-- [Pavlo Razumovskyi](https://github.com/1um) (lead)
-- [Josh Payne](https://github.com/joshpxyne)
-- [Tinah Hong](https://github.com/tunahfishy)
-- [Alex Korshuk](https://github.com/AlekseyKorshuk)
-- [Travis Fischer](https://github.com/transitive-bullshit)
+https://github.com/Coframe/coframe-public/assets/25165841/65ffab30-5c94-40fe-b1e9-d584b1481722
 
 If you'd like to be a contributor, just submit a pull request!
 

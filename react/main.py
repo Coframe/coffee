@@ -62,12 +62,12 @@ def process_file(file_path, mount_dir=None, root_directory=None):
 
 def process_coffee_tag(coffee_tag=None, ctx: FileContext = None):
     """
-    Brews or Pour a <Coffee> components.
+    Brews or Pours <Coffee> components.
     """
     working_dir = os.path.join(os.path.dirname(ctx.file_path), ctx.mount_dir)
     coffee_import_statement = f"import Coffee from '{ctx.mount_dir}/Coffee'\n"
 
-    brew_path = os.path.join(working_dir, "__brew__.tsx")
+    brew_path = os.path.join(working_dir, "Brew.tsx")
     brew_content = ""
     if os.path.exists(brew_path):
         with open(brew_path, "r") as brew_file:
