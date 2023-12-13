@@ -4,7 +4,7 @@
 
 — <ins>**Cof**</ins>rame <ins>**F**</ins>ront-<ins>**E**</ins>nd <ins>**E**</ins>ngineer
 
-*Quickly build and iterate on your front-end with AI - right from your own IDE!*
+*Build and iterate on your UI 10x faster with AI - right from your own IDE!*
 
 <p>
 <a href="https://github.com/coframe/coffee/commits"><img alt="GitHub Last Commit" src="https://img.shields.io/github/last-commit/coframe/coffee" /></a>
@@ -15,13 +15,7 @@
 <br />
 </div>
 
-```
-<!-- TODO Animated demo of -->
-<Coffee brew="Contributors.tsx" contributors={contributors}>
-  Show list of contributors using circle images in horisontal line.
-  On hover show name.
-</Coffee>
-```
+https://github.com/Coframe/coframe-public/assets/25165841/03e731b8-5583-409c-ad75-99d6fee32d3e
 
 > Coffee caffeinates your frontend development workflow with AI. This project is intended to be more than just a nice demo, but rather be an ergonomic tool that can write and interact with production-quality code.
 
@@ -128,6 +122,8 @@ Now you have a fully functional, reusable React component that's ready to use in
 
 **The coolest part of Coffee, however, is that you can edit existing React components just as easily as creating new components from scratch.**
 
+https://github.com/Coframe/coframe-public/assets/25165841/e00ad1fb-d370-4389-b537-bcb288d7664e
+
 Let's say that you want to edit the MyButton (or any other) component. All you need to do is add the `coffee="description of change to make"` prop:
 
 ```tsx
@@ -174,11 +170,7 @@ Follow us on [Twitter](https://twitter.com/coframe_ai) for new feature releases,
 
 ## Core Contributors
 
-- [Pavlo Razumovskyi](https://github.com/1um) (lead)
-- [Josh Payne](https://github.com/joshpxyne)
-- [Tinah Hong](https://github.com/tunahfishy)
-- [Alex Korshuk](https://github.com/AlekseyKorshuk)
-- [Travis Fischer](https://github.com/transitive-bullshit)
+https://github.com/Coframe/coframe-public/assets/25165841/65ffab30-5c94-40fe-b1e9-d584b1481722
 
 If you'd like to be a contributor, just submit a pull request!
 

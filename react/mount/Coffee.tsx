@@ -22,7 +22,7 @@ const Coffee: React.FC<{ brew?: string|any, children: React.ReactNode }> = ({ br
       };
     const [GeneratedComponent, setGeneratedComponent] = useState<React.ComponentType<any>>(()=>FallbackComponent);
     const [loaded, setLoaded] = useState(false);
-    brew = brew || "./__brew__.tsx"
+    brew = brew || "./Brew.tsx"
 
     useEffect(() => {
         const loadComponent = async () => {
