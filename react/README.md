@@ -172,6 +172,12 @@ Follow us on [Twitter](https://twitter.com/coframe_ai) for new feature releases,
 
 https://github.com/Coframe/coframe-public/assets/25165841/65ffab30-5c94-40fe-b1e9-d584b1481722
 
+- [Pavlo Razumovskyi](https://github.com/1um) (lead)
+- [Josh Payne](https://github.com/joshpxyne)
+- [Tinah Hong](https://github.com/tunahfishy)
+- [Alex Korshuk](https://github.com/AlekseyKorshuk)
+- [Travis Fischer](https://github.com/transitive-bullshit)
+
 If you'd like to be a contributor, just submit a pull request!
 
 ⚡ We are also hiring for generalist engineers and AI engineers who are passionate about the future of UX/AI. Coffee is just one of the many exciting things we have brewing. If you want to build this future with us, please shoot us a DM on [Twitter](https://twitter.com/coframe_ai)!
