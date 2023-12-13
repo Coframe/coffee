@@ -44,7 +44,7 @@ No dependencies, no setup.
 Just your React webapp normally, and then open another shell in the same directory and run:
 
 ```bash
-docker run -it -e OPENAI_API_KEY=${OPENAI_API_KEY} -v $(pwd):/mount coframe/coffee:latest
+docker run --pull=always -it -e OPENAI_API_KEY=${OPENAI_API_KEY} -v $(pwd):/mount coframe/coffee:latest
 ```
 
 You can also build the image yourself from the /react directory:
