@@ -62,7 +62,7 @@ Coffee uses Docker to make sure that any agentic code it runs is fully isolated.
 
 When you run Coffee, it will listen for changes to `js/jsx/ts/tsx` files in your source directory, and if it detects a `<Coffee>` JSX component, it will kick off its magic!
 
-```tsx
+```jsx
 <Coffee parameter={parameter}>
   Here is where you put your prompt that Coffee will use to generate the first
   version of your desired component.
@@ -81,7 +81,7 @@ Every time you save your source file, Coffee will look to see if there are any `
 
 Iterating on a component after it has been brewed is just as easy:
 
-```tsx
+```jsx
 <Coffee parameter={parameter}>
   To edit and update the brewed component, all you need to do is replace the prompt with
   your desired changes. For instance, "make the button background darker".
