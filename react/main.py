@@ -35,13 +35,13 @@ def process_file(file_path, mount_dir=None, root_directory=None, example=None):
     with open(file_path, "r") as file:
         file_content = file.read()
 
+    example_content = None
     if example:
         example_path = os.path.join(root_directory, "./"+example)
         try:
             with open(example_path, "r") as example_file:
                 example_content = example_file.read()
         except FileNotFoundError:
-            example_content = None
             print(f"Could not find example file at {example_path}")
             return
 
@@ -95,11 +95,11 @@ def process_coffee_tag(coffee_tag=None, ctx: FileContext = None):
 
     if pour:
         print(f"Pouring component to {pour}...")
-        set_mount("./mount", working_dir, False)
+        mount_coffee_files("./mount", working_dir, False, cleanup=[brew_path])
         pour_component(pour_path=pour, ctx=brew_ctx)
     else:
         print("Brewing new component...")
-        set_mount("./mount", working_dir, True)
+        mount_coffee_files("./mount", working_dir, True)
         brew_component(ctx=brew_ctx)
 
     return
@@ -261,7 +261,7 @@ def set_import(file_content, import_statement, upsert=True):
     return file_content, modified
 
 
-def set_mount(source, target, mount=True):
+def mount_coffee_files(source, target, mount=True, cleanup=[]):
     """
     Mount or unmount the source directory to the target directory.
     """
@@ -275,6 +275,9 @@ def set_mount(source, target, mount=True):
         else:
             shutil.copy2(s, d) if mount else os.remove(d)
 
+    if not mount and len(cleanup):
+        for path in cleanup:
+            os.remove(path)
 
 def parse_config(path):
     """
