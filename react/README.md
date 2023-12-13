@@ -4,7 +4,7 @@
 
 — <ins>**Cof**</ins>rame <ins>**F**</ins>ront-<ins>**E**</ins>nd <ins>**E**</ins>ngineer
 
-*Quickly build and iterate on your front-end with AI - right from your own IDE!*
+*Build and iterate on your UI 10x faster with AI - right from your own IDE!*
 
 <p>
 <a href="https://github.com/coframe/coffee/commits"><img alt="GitHub Last Commit" src="https://img.shields.io/github/last-commit/coframe/coffee" /></a>
