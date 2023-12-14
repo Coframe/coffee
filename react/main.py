@@ -78,9 +78,10 @@ def process_coffee_tag(coffee_tag=None, ctx: FileContext = None):
     """
     working_dir = os.path.join(os.path.dirname(ctx.file_path), ctx.mount_dir)
     coffee_import_statement = f"import Coffee from '{ctx.mount_dir}/Coffee'\n"
-
-    brew_path = os.path.join(working_dir, "Brew.tsx")
+    extenstion = ctx.file_path.split(".")[-1]
+    brew_path = os.path.join(working_dir, "Brew."+extenstion)
     brew_content = ""
+
     if os.path.exists(brew_path):
         with open(brew_path, "r") as brew_file:
             brew_content = brew_file.read()
@@ -99,7 +100,7 @@ def process_coffee_tag(coffee_tag=None, ctx: FileContext = None):
         pour_component(pour_path=pour, ctx=brew_ctx)
     else:
         print("Brewing new component...")
-        mount_coffee_files("./mount", working_dir, True)
+        mount_coffee_files("./mount", working_dir, True, without=[".d.ts"] if extenstion not in ["ts", "tsx"] else [])
         brew_component(ctx=brew_ctx)
 
     return
@@ -271,7 +272,7 @@ def set_import(file_content, import_statement, upsert=True):
     return file_content, modified
 
 
-def mount_coffee_files(source, target, mount=True, cleanup=[]):
+def mount_coffee_files(source, target, mount=True, cleanup=[], without=[]):
     """
     Mount or unmount the source directory to the target directory.
     """
@@ -280,6 +281,10 @@ def mount_coffee_files(source, target, mount=True, cleanup=[]):
     for item in os.listdir(source):
         s = os.path.join(source, item)
         d = os.path.join(target, item)
+
+        if any(s.endswith(ext) for ext in without):
+            continue
+
         if os.path.isdir(s):
             os.symlink(s, d) if mount else os.remove(d)
         else:
@@ -294,7 +299,7 @@ def parse_config(path):
     Reads and parses config file
     """
 
-    default_config = {"mount": "./components", "patterns": ["**/*.tsx"], "example": None}
+    default_config = {"mount": "./components", "patterns": ["**/*.js","**/*.jsx", "**/*.ts", "**/*.tsx"], "example": None}
     try:
         with open(path, "r") as file:
             return dict(default_config, **json.load(file))
@@ -316,19 +321,25 @@ if __name__ == "__main__":
     watcher = FileWatcher(
         root_directory,
         watch_patterns=config["patterns"],
-        ignore_patterns=["Coffee.tsx"],
+        ignore_patterns=["Coffee.jsx", "Coffee.d.ts", "Brew.*"],
     )
     watcher.start()
     prev_inc = 0
 
-    while True:
-        time.sleep(1)
-        if prev_inc != watcher.last_modified_file_inc:
-            print(f"File changed: {watcher.last_modified_file}")
-            process_file(
-                watcher.last_modified_file,
-                mount_dir=config["mount"],
-                root_directory=root_directory,
-                example=config["example"],
-            )
-            prev_inc = watcher.last_modified_file_inc
+    try:
+        while True:
+            time.sleep(1)
+            if prev_inc != watcher.last_modified_file_inc:
+                print(f"File changed: {watcher.last_modified_file}")
+                process_file(
+                    watcher.last_modified_file,
+                    mount_dir=config["mount"],
+                    root_directory=root_directory,
+                    example=config["example"],
+                )
+                prev_inc = watcher.last_modified_file_inc
+    except KeyboardInterrupt:
+        print("Stopping...")
+        watcher.stop()
+        exit()
+
