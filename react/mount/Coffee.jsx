@@ -2,7 +2,7 @@
 
 import React, { Suspense, useState, useEffect } from 'react';
 
-const Coffee: React.FC<{ brew?: string|any, children: React.ReactNode }> = ({ brew, children, pass_children, ...props }) => {
+const Coffee = ({ brew, children, pass_children, ...props }) => {
     const FallbackComponent = () => <div style={{width:"100%", textAlign:"center", fontSize:"32px"}}> ☕ Brewing
                                         <span style={dotStyle}>.</span>
                                         <span style={{...dotStyle, animationDelay: '0.2s'}}>.</span>
@@ -17,19 +17,19 @@ const Coffee: React.FC<{ brew?: string|any, children: React.ReactNode }> = ({ br
                                             }
                                         }`}
                                         </style></div>;
-    const dotStyle: React.CSSProperties = {
+    const dotStyle = {
         animation: 'dot 1s infinite',
       };
-    const [GeneratedComponent, setGeneratedComponent] = useState<React.ComponentType<any>>(()=>FallbackComponent);
+    const [GeneratedComponent, setGeneratedComponent] = useState(()=>FallbackComponent);
     const [loaded, setLoaded] = useState(false);
-    brew = brew || "./Brew.tsx"
+    brew = brew || "./Brew"
 
     useEffect(() => {
         const loadComponent = async () => {
             if(loaded) return;
             console.log('loading component...')
             try {
-                let Component: React.ReactNode = undefined;
+                let Component = undefined;
                 if(typeof brew === 'function') {
                     Component = brew;
                 } else if(typeof brew === 'string') {
@@ -44,8 +44,8 @@ const Coffee: React.FC<{ brew?: string|any, children: React.ReactNode }> = ({ br
                 setGeneratedComponent(() => FallbackComponent);
             }
         };
-        // try loading component every 4s
-        const interval = setInterval(loadComponent, 4*1000);
+        // try loading component every 1s
+        const interval = setInterval(loadComponent, 1*1000);
         return () => clearInterval(interval);
     }, [brew, loaded]);
 

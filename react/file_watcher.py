@@ -3,7 +3,7 @@ import pathlib
 import fnmatch
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
-
+import igittigitt
 
 class FileWatcher:
     def __init__(self, base_path, watch_patterns=None, ignore_patterns=None):
@@ -12,7 +12,8 @@ class FileWatcher:
         self.ignore_patterns = ignore_patterns + [".git/*"]
         if ignore_patterns:
             self.ignore_patterns.extend(ignore_patterns)
-        self._load_ignore_patterns()
+        self.gitignore = igittigitt.IgnoreParser()
+        self.gitignore.parse_rule_file(pathlib.Path(self.base_path+'/.gitignore'))
 
         if self.watch_patterns:
             print("Watch patterns:", self.watch_patterns)
@@ -26,23 +27,11 @@ class FileWatcher:
         self.last_modified_file = None
         self.last_modified_file_inc = 0
 
-    def _load_ignore_patterns(self):
-        # Load ignore patterns from .gitignore files or similar
-        patterns_paths = ["/.gitignore"]
-        for path in patterns_paths:
-            try:
-                with open(self.base_path + path, "r") as f:
-                    lines = f.readlines()
-                    self.ignore_patterns += [
-                        line.strip()
-                        for line in lines
-                        if line.strip() and not line.strip().startswith("#")
-                    ]
-            except FileNotFoundError:
-                continue
-
     def _is_ignored(self, path):
         relative_path = pathlib.Path(path).relative_to(self.base_path)
+
+        if self.gitignore.match(pathlib.Path(path)):
+            return True
 
         for pattern in self.ignore_patterns:
             # Check the full path for a match
