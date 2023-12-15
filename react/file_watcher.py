@@ -4,10 +4,12 @@ import fnmatch
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 import igittigitt
+from itertools import islice
 
 class FileWatcher:
     def __init__(self, base_path, watch_patterns=None, ignore_patterns=None):
         self.base_path = base_path
+        self.display_content(self.base_path)
         self.watch_patterns = watch_patterns
         self.ignore_patterns = ignore_patterns + [".git/*"]
         if ignore_patterns:
@@ -26,6 +28,14 @@ class FileWatcher:
         self.thread = Thread(target=self._watch)
         self.last_modified_file = None
         self.last_modified_file_inc = 0
+
+    def display_content(self, dir_path):
+        print("Watching:")
+        folders_and_files = sorted(pathlib.Path(dir_path).iterdir(), key=lambda p: (not p.is_dir(), p.name))
+        if(len(folders_and_files) == 0):
+            raise Exception("No files found in the watcher base path")
+        for path in islice(folders_and_files, 10):
+            print(f"  {['📄', '📁'][+path.is_dir()]} {path.relative_to(dir_path)}")
 
     def _is_ignored(self, path):
         relative_path = pathlib.Path(path).relative_to(self.base_path)
