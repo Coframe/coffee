@@ -14,8 +14,11 @@ class FileWatcher:
         self.ignore_patterns = ignore_patterns + [".git/*"]
         if ignore_patterns:
             self.ignore_patterns.extend(ignore_patterns)
-        self.gitignore = igittigitt.IgnoreParser()
-        self.gitignore.parse_rule_file(pathlib.Path(self.base_path+'/.gitignore'))
+
+        gitignore_path = pathlib.Path(self.base_path) / ".gitignore"
+        if gitignore_path.exists():
+            self.gitignore = igittigitt.IgnoreParser()
+            self.gitignore.parse_rule_file(gitignore_path)
 
         if self.watch_patterns:
             print("Watch patterns:", self.watch_patterns)
@@ -40,7 +43,7 @@ class FileWatcher:
     def _is_ignored(self, path):
         relative_path = pathlib.Path(path).relative_to(self.base_path)
 
-        if self.gitignore.match(pathlib.Path(path)):
+        if self.gitignore and self.gitignore.match(pathlib.Path(path)):
             return True
 
         for pattern in self.ignore_patterns:
