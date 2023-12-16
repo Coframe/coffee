@@ -4,16 +4,23 @@ import fnmatch
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 import igittigitt
+from itertools import islice
+
 
 class FileWatcher:
     def __init__(self, base_path, watch_patterns=None, ignore_patterns=None):
         self.base_path = base_path
+        print("Watching directory:")
+        display_content(self.base_path)
         self.watch_patterns = watch_patterns
         self.ignore_patterns = ignore_patterns + [".git/*"]
         if ignore_patterns:
             self.ignore_patterns.extend(ignore_patterns)
-        self.gitignore = igittigitt.IgnoreParser()
-        self.gitignore.parse_rule_file(pathlib.Path(self.base_path+'/.gitignore'))
+
+        gitignore_path = pathlib.Path(self.base_path) / ".gitignore"
+        if gitignore_path.exists():
+            self.gitignore = igittigitt.IgnoreParser()
+            self.gitignore.parse_rule_file(gitignore_path)
 
         if self.watch_patterns:
             print("Watch patterns:", self.watch_patterns)
@@ -30,7 +37,7 @@ class FileWatcher:
     def _is_ignored(self, path):
         relative_path = pathlib.Path(path).relative_to(self.base_path)
 
-        if self.gitignore.match(pathlib.Path(path)):
+        if self.gitignore and self.gitignore.match(pathlib.Path(path)):
             return True
 
         for pattern in self.ignore_patterns:
@@ -73,3 +80,15 @@ class FileWatcher:
     def stop(self):
         self.observer.stop()
         self.thread.join()
+
+
+def display_content(dir_path, n=10):
+    folders_and_files = sorted(
+        pathlib.Path(dir_path).iterdir(), key=lambda p: (not p.is_dir(), p.name)
+    )
+    if len(folders_and_files) == 0:
+        raise Exception("No files found in the path")
+    for path in islice(folders_and_files, n):
+        print(f"  {['📄', '📁'][+path.is_dir()]} {path.relative_to(dir_path)}")
+    if len(folders_and_files) > n:
+        print("  ...")
