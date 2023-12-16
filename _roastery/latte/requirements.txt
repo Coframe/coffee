@@ -1,0 +1,8 @@
+openai
+tiktoken
+jinja2
+watchdog
+pydantic
+ruff
+igittigitt
+aiohttp
