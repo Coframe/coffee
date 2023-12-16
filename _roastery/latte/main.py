@@ -275,22 +275,17 @@ def set_import(file_content, import_statement, upsert=True):
     """
     Adds or removes the import statements from file_content.
     """
-    print(f"Import statement: {import_statement}")
     remove = not upsert
-    print(file_content, import_statement)
     import_index = file_content.find(import_statement)
-    print('here', remove, upsert, import_index)
     modified = False
 
     if remove and import_index != -1:
-        print("Removing import statement")
         file_content = (
             file_content[:import_index]
             + file_content[import_index + len(import_statement) :]
         )
         modified = True
     if upsert and import_index == -1:
-        print("Adding import statement")
         insert_index = file_content.find("\n", file_content.find("from", file_content.rfind("import ")))
         file_content = (
             file_content[: insert_index + 1]
