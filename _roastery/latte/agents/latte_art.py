@@ -1,4 +1,3 @@
-import base64
 import os
 from openai import OpenAI
 from agents.approximate_costs import approximate_image_costs
@@ -6,13 +5,12 @@ from typing import Literal
 import aiohttp
 from aiohttp import FormData
 import jinja2
-# import requests
-# from PIL import Image
-# from io import BytesIO
+import requests
+from PIL import Image
+from io import BytesIO
 
 client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
-# eventually save src to a file and use that since TTL on OpenAI is ~ 1 hour
 class LatteAgent:
     """
     Only makes OpenAI calls
@@ -41,7 +39,7 @@ class LatteAgent:
         size=size,
         quality=quality,
         n=1,
-        # response_format="b64_json"
+        response_format="url"
       )
 
       image_url = response.data[0].url
@@ -58,24 +56,19 @@ class LatteAgent:
         };
 
         export default Steam;
-      """).render(image_url=image_url)
+      """,
+        trim_blocks=True,
+        lstrip_blocks=True,
+        autoescape=False,
+      ).render(image_url=image_url)
 
       with open(steam_path, 'w') as out_file:
         out_file.write(steam_content)
 
-
-      # image_base64 = response.data[0].b64_json
-      # image_data = base64.b64decode(image_base64)
-
-      # ## to do, support transparency
-      # if transparent:
-      #   image_data = await self.remove_bg(image_data)
-
-      # print ("-------------------")
-      # cost = approximate_image_costs({"model": "dall-e-3"})
-      # print (f"Cost: ${round(cost['total_cost'], 4)}")
+      print ("-------------------")
+      cost = approximate_image_costs({"model": "dall-e-3"})
+      print (f"Cost: ${round(cost['total_cost'], 4)}")
       return steam_content
-
 
 
     async def remove_bg(self, image_data):
@@ -93,3 +86,12 @@ class LatteAgent:
           else:
             response.raise_for_status()
 
+
+    async def save_img(self, img_url, component_name, file_path, mount_dir):
+      response = requests.get(img_url)
+      img = Image.open(BytesIO(response.content))
+      image_file_path = os.path.join(
+          os.path.dirname(file_path), mount_dir, component_name
+      )
+      img.save(f'{image_file_path}.png', 'PNG')
+      return img

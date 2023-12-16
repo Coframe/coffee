@@ -12,7 +12,7 @@ import asyncio
 
 CodeAgent = BaselineAgent()
 PathAgent = ComponentPathAgent()
-DreamAgent = LatteAgent()
+LatteAgent = LatteAgent()
 
 class FileContext(BaseModel):
     file_path: str
@@ -144,7 +144,7 @@ async def process_latte_tag(latte_tag=None, ctx: FileContext = None):
     if pour:
         print(f"pouring image...")
         mount_files("./mount", working_dir, False, cleanup=[steam_path])
-        pour_latte_art(pour_path=pour, ctx=steam_ctx)
+        await pour_latte_art(pour_path=pour, ctx=steam_ctx)
     else:
         print("Steaming new image...")
         mount_files("./mount", working_dir, True, without=[".d.ts"] if extension not in ["ts", "tsx"] else [])
@@ -181,7 +181,7 @@ async def steam_component(ctx: SteamContext = None):
             file.write(file_content)
 
     prompt = ctx.latte_tag["children"]
-    await DreamAgent.generate_latte_art(prompt=prompt, steam_path=ctx.steam_path)
+    await LatteAgent.generate_latte_art(prompt=prompt, steam_path=ctx.steam_path)
 
 def pour_component(
     pour_path=None, attributes_to_remove=["brew", "pour"], ctx: BrewContext = None
@@ -236,7 +236,7 @@ def pour_component(
     print("Replacement complete.")
 
 
-def pour_latte_art(
+async def pour_latte_art(
   pour_path=None, attributes_to_remove=["brew", "pour"], ctx: SteamContext = None
 ):
   """
@@ -272,9 +272,17 @@ def pour_latte_art(
   with open(component_file_path, "w") as component_file:
       component_file.write(ctx.steam_content)
 
+  src_pattern = r'src="([^"]+)"'
+  src_match = re.search(src_pattern, ctx.steam_content)
+
   # Update parent file
   with open(ctx.file_path, "w") as file:
       file.write(file_content)
+
+  if src_match:
+      src_value = src_match.group(1)
+      print(f'src attribute value: {src_value}')
+      await LatteAgent.save_img(src_value, component_name, ctx.file_path, ctx.mount_dir)
 
   print("Replacement complete.")
 

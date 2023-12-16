@@ -6,3 +6,4 @@ pydantic
 ruff
 igittigitt
 aiohttp
+Pillow
