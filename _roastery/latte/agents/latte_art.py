@@ -81,7 +81,7 @@ class LatteAgent:
     async def remove_bg(self, image_data):
       url = 'https://clipdrop-api.co/remove-background/v1'
       headers = {
-        'x-api-key': "bb59ef25acc3d911891ac461e42ad95be58e0f8a6de8c12297e2d06950cf075c131dae289ec426a8bc288c8cc0781856"}
+        'x-api-key': os.environ.get("CLIPDROP_API_KEY")}
       data = FormData()
       data.add_field('image_file', image_data, filename='input.png', content_type='image/png')
 
