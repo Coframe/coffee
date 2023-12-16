@@ -447,9 +447,12 @@ async def main():
                     example=config["example"],
                 )
                 prev_inc = watcher.last_modified_file_inc
-    except KeyboardInterrupt:
-        print("Stopping...")
+    finally:
         watcher.stop()
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    try:
+      asyncio.run(main())
+    except KeyboardInterrupt:
+      print("Stopping due to KeyboardInterrupt...")
+
