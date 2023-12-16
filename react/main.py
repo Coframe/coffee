@@ -21,6 +21,7 @@ class FileContext(BaseModel):
     working_dir: str
     example_content: Optional[str] = None
 
+
 class BrewContext(FileContext):
     brew_path: str
     brew_content: str
@@ -37,7 +38,7 @@ def process_file(file_path, mount_dir=None, root_directory=None, example=None):
 
     example_content = None
     if example:
-        example_path = os.path.join(root_directory, "./"+example)
+        example_path = os.path.join(root_directory, "./" + example)
         try:
             with open(example_path, "r") as example_file:
                 example_content = example_file.read()
@@ -79,7 +80,7 @@ def process_coffee_tag(coffee_tag=None, ctx: FileContext = None):
     working_dir = os.path.join(os.path.dirname(ctx.file_path), ctx.mount_dir)
     coffee_import_statement = f"import Coffee from '{ctx.mount_dir}/Coffee'\n"
     extenstion = ctx.file_path.split(".")[-1]
-    brew_path = os.path.join(working_dir, "Brew."+extenstion)
+    brew_path = os.path.join(working_dir, "Brew." + extenstion)
     brew_content = ""
 
     if os.path.exists(brew_path):
@@ -100,7 +101,12 @@ def process_coffee_tag(coffee_tag=None, ctx: FileContext = None):
         pour_component(pour_path=pour, ctx=brew_ctx)
     else:
         print("Brewing new component...")
-        mount_coffee_files("./mount", working_dir, True, without=[".d.ts"] if extenstion not in ["ts", "tsx"] else [])
+        mount_coffee_files(
+            "./mount",
+            working_dir,
+            True,
+            without=[".d.ts"] if extenstion not in ["ts", "tsx"] else [],
+        )
         brew_component(ctx=brew_ctx)
 
     return
@@ -169,7 +175,7 @@ def pour_component(
     # Update component file to reflect the new name
     for update in CodeAgent.modify_file(
         source_file=component_file_path,
-        user_query=f'Update component file to reflect the new component name: {component_name}',
+        user_query=f"Update component file to reflect the new component name: {component_name}",
         file_content=ctx.brew_content,
         parent_file_content=file_content,
         example_content=ctx.example_content,
@@ -261,7 +267,9 @@ def set_import(file_content, import_statement, upsert=True):
         )
         modified = True
     if upsert and import_index == -1:
-        insert_index = file_content.find("\n", file_content.find("from", file_content.rfind("import ")))
+        insert_index = file_content.find(
+            "\n", file_content.find("from", file_content.rfind("import "))
+        )
         file_content = (
             file_content[: insert_index + 1]
             + import_statement
@@ -294,12 +302,17 @@ def mount_coffee_files(source, target, mount=True, cleanup=[], without=[]):
         for path in cleanup:
             os.remove(path)
 
+
 def parse_config(path):
     """
     Reads and parses config file
     """
 
-    default_config = {"mount": "./components", "patterns": ["**/*.js","**/*.jsx", "**/*.ts", "**/*.tsx"], "example": None}
+    default_config = {
+        "mount": "./components",
+        "patterns": ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx"],
+        "example": None,
+    }
     try:
         with open(path, "r") as file:
             return dict(default_config, **json.load(file))
@@ -342,4 +355,3 @@ if __name__ == "__main__":
         print("Stopping...")
         watcher.stop()
         exit()
-
