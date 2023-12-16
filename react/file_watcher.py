@@ -35,7 +35,7 @@ class FileWatcher:
     def display_content(self, dir_path):
         print("Watching:")
         folders_and_files = sorted(pathlib.Path(dir_path).iterdir(), key=lambda p: (not p.is_dir(), p.name))
-        if(len(folders_and_files) == 0):
+        if len(folders_and_files) == 0:
             raise Exception("No files found in the watcher base path")
         for path in islice(folders_and_files, 10):
             print(f"  {['📄', '📁'][+path.is_dir()]} {path.relative_to(dir_path)}")
