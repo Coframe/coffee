@@ -94,4 +94,5 @@ class LatteAgent:
           os.path.dirname(file_path), mount_dir, component_name
       )
       img.save(f'{image_file_path}.png', 'PNG')
+      print(f"Saved image to {image_file_path}.png")
       return img

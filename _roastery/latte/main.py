@@ -22,21 +22,20 @@ class FileContext(BaseModel):
     working_dir: str
     example_content: Optional[str] = None
 
-class BrewContext(FileContext):
-    brew_path: str
-    brew_content: str
-    coffee_import_statement: str
-    coffee_tag: dict
+class CaffeineContext(FileContext):
+    path: str
+    content: str
+    tag_import_statement: str
+    tag: dict
 
-class SteamContext(FileContext):
-    latte_import_statement: str
-    latte_tag: dict
-    steam_path: str
-    steam_content: str
+caffeine_component = {
+    "Latte": "Steam",
+    "Coffee": "Brew",
+}
 
 async def process_file(file_path, mount_dir=None, root_directory=None, example=None):
     """
-    Detects and processes <Coffee> and <Component coffee="..."> tags.
+    Detects and processes <Coffee>, <Component coffee="...">, and <Latte> tags.
     """
     with open(file_path, "r") as file:
         file_content = file.read()
@@ -60,17 +59,16 @@ async def process_file(file_path, mount_dir=None, root_directory=None, example=N
         example_content=example_content,
     )
 
-    # Extract and process <Coffee> tag
+    # Extract and process <Coffee> or <Latte> tag
     coffee_tag = extract_tag(file_content, tag="Coffee")
+    latte_tag = extract_tag(file_content, tag="Latte")
+
     if coffee_tag:
         print(f"<Coffee> tag found in {file_path}")
-        process_coffee_tag(coffee_tag=coffee_tag, ctx=ctx)
-
-    # Extract and process <Latte> tag
-    latte_tag = extract_tag(file_content, tag="Latte")
+        await process_tag(tag=coffee_tag, ctx=ctx)
     if latte_tag:
         print(f"<Latte> tag found in {file_path}")
-        await process_latte_tag(latte_tag=latte_tag, ctx=ctx)
+        await process_tag(tag=latte_tag, ctx=ctx)
 
     # Extract and process <Component coffee="..."> caffeniated components
     caffeinated_component = extract_tag(
@@ -84,125 +82,87 @@ async def process_file(file_path, mount_dir=None, root_directory=None, example=N
         return
 
 
-def process_coffee_tag(coffee_tag=None, ctx: FileContext = None):
+async def process_tag(tag=None, ctx: FileContext = None):
     """
-    Brews or Pours <Coffee> components.
+    Processes <Coffee> or <Latte> components.
     """
     working_dir = os.path.join(os.path.dirname(ctx.file_path), ctx.mount_dir)
-    coffee_import_statement = f"import Coffee from '{ctx.mount_dir}/Coffee'\n"
+    tag_name, caffeine_tag_name = tag["tag"], caffeine_component[tag["tag"]]
+    tag_import_statement = f"import {tag_name} from '{ctx.mount_dir}/{tag_name}'\n"
     extension = ctx.file_path.split(".")[-1]
-    brew_path = os.path.join(working_dir, "Brew."+extension)
-    brew_content = ""
+    caffeine_path = os.path.join(working_dir, f"{caffeine_tag_name}.{extension}")
+    caffeine_content = ""
 
-    if os.path.exists(brew_path):
-        with open(brew_path, "r") as brew_file:
-            brew_content = brew_file.read()
-    brew_ctx = BrewContext(
+    if os.path.exists(caffeine_path):
+        with open(caffeine_path, "r") as caffeine_file:
+            caffeine_content = caffeine_file.read()
+
+    caffeine_ctx = CaffeineContext(
         **ctx.dict(),
-        brew_path=brew_path,
-        brew_content=brew_content,
-        coffee_import_statement=coffee_import_statement,
-        coffee_tag=coffee_tag,
+        path=caffeine_path,
+        content=caffeine_content,
+        tag_import_statement=tag_import_statement,
+        tag=tag,
     )
-    pour = coffee_tag["props"].get("pour", None)
+    pour = tag["props"].get("pour", None)
+    print('pour', pour)
 
     if pour:
         print(f"Pouring component to {pour}...")
-        mount_files("./mount", working_dir, False, cleanup=[brew_path])
-        pour_component(pour_path=pour, ctx=brew_ctx)
+        mount_files("./mount", working_dir, False, cleanup=[caffeine_path])
+        await pour_component(pour_path=pour, ctx=caffeine_ctx)
     else:
-        print("Brewing new component...")
+        print(f"Processing new {tag_name} component...")
         mount_files("./mount", working_dir, True, without=[".d.ts"] if extension not in ["ts", "tsx"] else [])
-        brew_component(ctx=brew_ctx)
+        await brew_component(ctx=caffeine_ctx)
 
     return
 
-async def process_latte_tag(latte_tag=None, ctx: FileContext = None):
-    """
-    Steams or pours <Latte> components.
-    """
-    working_dir = os.path.join(os.path.dirname(ctx.file_path), ctx.mount_dir)
-    latte_import_statement = f"import Latte from '{ctx.mount_dir}/Latte'\n"
-    extension = ctx.file_path.split(".")[-1]
-    steam_path = os.path.join(working_dir, "Steam."+extension)
-    steam_content = ""
-
-    if os.path.exists(steam_path):
-        with open(steam_path, "r") as brew_file:
-            steam_content = brew_file.read()
-
-    steam_path = os.path.join(working_dir, "Steam.tsx")
-    steam_ctx = SteamContext(
-        **ctx.dict(),
-        steam_path=steam_path,
-        steam_content=steam_content,
-        latte_import_statement=latte_import_statement,
-        latte_tag=latte_tag,
-    )
-    pour = latte_tag["props"].get("pour", None)
-
-    if pour:
-        print(f"pouring image...")
-        mount_files("./mount", working_dir, False, cleanup=[steam_path])
-        await pour_latte_art(pour_path=pour, ctx=steam_ctx)
-    else:
-        print("Steaming new image...")
-        mount_files("./mount", working_dir, True, without=[".d.ts"] if extension not in ["ts", "tsx"] else [])
-        await steam_component(ctx=steam_ctx)
-
-    return
-
-def brew_component(ctx: BrewContext = None):
+async def brew_component(ctx: CaffeineContext = None):
     file_content, modified = set_import(
-        ctx.file_content, ctx.coffee_import_statement, True
+        ctx.file_content, ctx.tag_import_statement, True
     )
     if modified:
         with open(ctx.file_path, "w") as file:
             file.write(file_content)
 
-    prompt = ctx.coffee_tag["children"]
+    prompt = ctx.tag["children"]
 
-    for update in CodeAgent.modify_file(
-        source_file=ctx.brew_path,
-        user_query=prompt,
-        file_content=ctx.brew_content,
-        parent_file_content=file_content,
-        example_content=ctx.example_content,
-    ):
-        print(update)
+    if ctx.tag["tag"] == "Latte":
+      await LatteAgent.generate_latte_art(prompt=prompt, steam_path=ctx.path)
+    else:
+      for update in CodeAgent.modify_file(
+          source_file=ctx.path,
+          user_query=prompt,
+          file_content=ctx.content,
+          parent_file_content=file_content,
+          example_content=ctx.example_content,
+      ):
+          print(update)
 
 
-async def steam_component(ctx: SteamContext = None):
-    file_content, modified = set_import(
-        ctx.file_content, ctx.latte_import_statement, True
-    )
-    if modified:
-        with open(ctx.file_path, "w") as file:
-            file.write(file_content)
-
-    prompt = ctx.latte_tag["children"]
-    await LatteAgent.generate_latte_art(prompt=prompt, steam_path=ctx.steam_path)
-
-def pour_component(
-    pour_path=None, attributes_to_remove=["brew", "pour"], ctx: BrewContext = None
+async def pour_component(
+    pour_path=None,
+    attributes_to_remove=["brew", "pour"],
+    ctx=None,
 ):
     """
-    Replaces the <Coffee> tag with <BrewedComponent>.
+    Replaces the <Coffee> or <Latte> tag with <Component>.
     1. Replace <Coffee ...> </Coffee> tag with <ComponentName ...props />
-    2. Append import ComponentName from './coffee/brew/ComponentName' after the last import statement.
+    2. Append import ComponentName from './mount_dir/ComponentName' after the last import statement.
     """
 
     # Replace tag
     component_name = pour_path.split(".")[0]
-    coffee_start, coffee_end = ctx.coffee_tag["match"].span()
-    attributes = ctx.coffee_tag["attributes"]
+    tag_start, tag_end = ctx.tag["match"].span()
+    attributes = ctx.tag["attributes"]
     for attr in attributes_to_remove:
         attributes = re.sub(rf'\b{attr}="[^"]+"\s*|\b{attr}\b\s*', "", attributes)
     file_content = ctx.file_content
     file_content = (
-        file_content[:coffee_start]
-        + f"<{component_name} {attributes.strip()} />"
-        + file_content[coffee_end:]
+        file_content[:tag_start]
+        + f"<{component_name} {attributes.strip()}/>"
+        + file_content[tag_end:]
     )
 
     # Update import statements
@@ -210,14 +170,14 @@ def pour_component(
         f"import {component_name} from '{ctx.mount_dir}/{component_name}'\n"
     )
     file_content, _ = set_import(file_content, import_statement, True)
-    file_content, _ = set_import(file_content, ctx.coffee_import_statement, False)
+    file_content, _ = set_import(file_content, ctx.tag_import_statement, False)
 
     # Create component file
     component_file_path = os.path.join(
         os.path.dirname(ctx.file_path), ctx.mount_dir, pour_path
     )
     with open(component_file_path, "w") as component_file:
-        component_file.write(ctx.brew_content)
+        component_file.write(ctx.content)
 
     # Update parent file
     with open(ctx.file_path, "w") as file:
@@ -227,64 +187,21 @@ def pour_component(
     for update in CodeAgent.modify_file(
         source_file=component_file_path,
         user_query=f'Update component file to reflect the new component name: {component_name}',
-        file_content=ctx.brew_content,
+        file_content=ctx.content,
         parent_file_content=file_content,
         example_content=ctx.example_content,
     ):
         print(update)
 
+    if ctx.tag["tag"] == "Latte":
+        src_pattern = r'src="([^"]+)"'
+        src_match = re.search(src_pattern, ctx.content)
+        if src_match:
+            src_value = src_match.group(1)
+            print(f'src attribute value: {src_value}')
+            await LatteAgent.save_img(src_value, component_name, ctx.file_path, ctx.mount_dir)
+
     print("Replacement complete.")
-
-
-async def pour_latte_art(
-  pour_path=None, attributes_to_remove=["brew", "pour"], ctx: SteamContext = None
-):
-  """
-  Replaces the <Latte> tag with <SteamedComponent>.
-  1. Replace <Coffee ...> </Coffee> tag with <ComponentName ...props />
-  2. Append import ComponentName from './coffee/brew/ComponentName' after the last import statement.
-  """
-
-  # Replace tag
-  component_name = pour_path.split(".")[0]
-  latte_start, latte_end = ctx.latte_tag["match"].span()
-  attributes = ctx.latte_tag["attributes"]
-  for attr in attributes_to_remove:
-      attributes = re.sub(rf'\b{attr}="[^"]+"\s*|\b{attr}\b\s*', "", attributes)
-  file_content = ctx.file_content
-  file_content = (
-      file_content[:latte_start]
-      + f"<{component_name} {attributes.strip()} />"
-      + file_content[latte_end:]
-  )
-
-  # Update import statements
-  import_statement = (
-      f"import {component_name} from '{ctx.mount_dir}/{component_name}'\n"
-  )
-  file_content, _ = set_import(file_content, import_statement, True)
-  file_content, _ = set_import(file_content, ctx.latte_import_statement, False)
-
-  # Create component file
-  component_file_path = os.path.join(
-      os.path.dirname(ctx.file_path), ctx.mount_dir, pour_path
-  )
-  with open(component_file_path, "w") as component_file:
-      component_file.write(ctx.steam_content)
-
-  src_pattern = r'src="([^"]+)"'
-  src_match = re.search(src_pattern, ctx.steam_content)
-
-  # Update parent file
-  with open(ctx.file_path, "w") as file:
-      file.write(file_content)
-
-  if src_match:
-      src_value = src_match.group(1)
-      print(f'src attribute value: {src_value}')
-      await LatteAgent.save_img(src_value, component_name, ctx.file_path, ctx.mount_dir)
-
-  print("Replacement complete.")
 
 
 def proccess_caffeinated_component(caffeinated_component=None, ctx: FileContext = None):
@@ -301,7 +218,7 @@ def proccess_caffeinated_component(caffeinated_component=None, ctx: FileContext 
         component=component_name,
         parent_file_path=ctx.file_path,
         import_statement=match.group(0),
-        directory=root_directory,
+        directory=os.environ.get("ROOT_DIR", "/mount"),
     ):
         print(update)
         if isinstance(update, dict) and update.get("file_path"):
@@ -358,17 +275,22 @@ def set_import(file_content, import_statement, upsert=True):
     """
     Adds or removes the import statements from file_content.
     """
+    print(f"Import statement: {import_statement}")
     remove = not upsert
+    print(file_content, import_statement)
     import_index = file_content.find(import_statement)
+    print('here', remove, upsert, import_index)
     modified = False
 
     if remove and import_index != -1:
+        print("Removing import statement")
         file_content = (
             file_content[:import_index]
             + file_content[import_index + len(import_statement) :]
         )
         modified = True
     if upsert and import_index == -1:
+        print("Adding import statement")
         insert_index = file_content.find("\n", file_content.find("from", file_content.rfind("import ")))
         file_content = (
             file_content[: insert_index + 1]
@@ -454,5 +376,5 @@ if __name__ == "__main__":
     try:
       asyncio.run(main())
     except KeyboardInterrupt:
-      print("Stopping due to KeyboardInterrupt...")
+      print(" Stopping due to KeyboardInterrupt...")
 
