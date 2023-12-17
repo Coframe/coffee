@@ -29,7 +29,7 @@ class BaselineAgent:
             Your task is to create a react component file according to the user query:
             {{user_query}}
 
-            This is current content of component file:
+            This is current content of the component file:
             ```
             {% for line in file_content.split("\n") %}
             {{ line }}
@@ -54,7 +54,7 @@ class BaselineAgent:
 
             Output whole new file for {{source_file}} within ``` and nothing else. It will be saved as is to the component file {{source_file}} and should work out of the box.
 
-            DO NOT add any new libraries or assume any classes that you don't see, other than those clearly used by the parent or child component. Put everything into single file: styles, types, etc.
+            DO NOT add any new libraries or assume any classes or types that you don't see, other than those clearly used by the parent or child component. Put everything into single file: styles, types, etc.
             Finally, please note that the code should be complete and fully functional. NO PLACEHOLDERS.
             Do not add any comments.
             The code you output will be written directly to a file, as-is. Any omission or deviation will completely break the system.
