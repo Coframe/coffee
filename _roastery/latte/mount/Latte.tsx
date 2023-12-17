@@ -2,7 +2,7 @@
 
 import React, { Suspense, useState, useEffect } from "react";
 
-const Latte = ({ brew, children, pass_children, ...props }) => {
+const Latte = ({ steam, children, pass_children, ...props }) => {
   const FallbackComponent = () => (
     <div style={{ width: "100%", textAlign: "center", fontSize: "32px" }}>
       {" "}
@@ -29,7 +29,7 @@ const Latte = ({ brew, children, pass_children, ...props }) => {
     () => FallbackComponent
   );
   const [loaded, setLoaded] = useState(false);
-  brew = brew || "./Steam";
+  steam = steam || "./Steam";
 
   useEffect(() => {
     const loadComponent = async () => {
@@ -37,10 +37,10 @@ const Latte = ({ brew, children, pass_children, ...props }) => {
       console.log("loading component...");
       try {
         let Component = undefined;
-        if (typeof brew === "function") {
-          Component = brew;
-        } else if (typeof brew === "string") {
-          const module = await import(`${brew}`);
+        if (typeof steam === "function") {
+          Component = steam;
+        } else if (typeof steam === "string") {
+          const module = await import(`${steam}`);
           Component = module.default;
         }
         if (!Component) return;
@@ -54,7 +54,7 @@ const Latte = ({ brew, children, pass_children, ...props }) => {
     // try loading component every 1s
     const interval = setInterval(loadComponent, 1 * 1000);
     return () => clearInterval(interval);
-  }, [brew, loaded]);
+  }, [steam, loaded]);
 
   return (
     <Suspense fallback={<></>}>
