@@ -105,7 +105,6 @@ async def process_tag(tag=None, ctx: FileContext = None):
         tag=tag,
     )
     pour = tag["props"].get("pour", None)
-    print('pour', pour)
 
     if pour:
         print(f"Pouring component to {pour}...")
