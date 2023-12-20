@@ -51,7 +51,7 @@ You can also build the image yourself from the /react directory:
 
 ```bash
 ./dev.sh build
-OPEN_API_KEY=${OPENAI_API_KEY} ./dev.sh ../path/to/any/frontend/repo/on/machine
+OPENAI_API_KEY=your_api_key ./dev.sh ../path/to/any/frontend/repo/on/machine
 ```
 
 You can keep an eye on the terminal running the Docker container to see what Coffee is up to. It's fun to see the code being generated!
