@@ -21,7 +21,9 @@ class FileWatcher:
         if gitignore_path.exists():
             self.gitignore = igittigitt.IgnoreParser()
             self.gitignore.parse_rule_file(gitignore_path)
-
+        else:
+            self.gitignore = None  # Set to None if no .gitignore file exists
+          
         if self.watch_patterns:
             print("Watch patterns:", self.watch_patterns)
         else:
