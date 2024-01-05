@@ -177,4 +177,4 @@ If you'd like to be a contributor, just submit a pull request!
 
 ## License
 
-MIT © [Coframe](https://coframe.ai)
+Apache 2.0 © [Coframe](https://coframe.ai)
