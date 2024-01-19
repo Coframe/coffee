@@ -97,7 +97,13 @@ def process_coffee_tag(coffee_tag=None, ctx: FileContext = None):
 
     if pour:
         print(f"Pouring component to {pour}...")
-        mount_coffee_files("./mount", working_dir, False, cleanup=[brew_path])
+        mount_coffee_files(
+            "./mount", 
+            working_dir, 
+            False, 
+            cleanup=[brew_path], 
+            without=[".d.ts"] if extenstion not in ["ts", "tsx"] else []
+        )
         pour_component(pour_path=pour, ctx=brew_ctx)
     else:
         print("Brewing new component...")
