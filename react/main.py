@@ -94,10 +94,16 @@ def process_coffee_tag(coffee_tag=None, ctx: FileContext = None):
         coffee_tag=coffee_tag,
     )
     pour = coffee_tag["props"].get("pour", None)
-
+    ignored_files = [".d.ts"] if extenstion not in ["ts", "tsx"] else []
     if pour:
         print(f"Pouring component to {pour}...")
-        mount_coffee_files("./mount", working_dir, False, cleanup=[brew_path])
+        mount_coffee_files(
+            "./mount", 
+            working_dir, 
+            False, 
+            cleanup=[brew_path], 
+            without=ignored_files
+        )
         pour_component(pour_path=pour, ctx=brew_ctx)
     else:
         print("Brewing new component...")
@@ -105,7 +111,7 @@ def process_coffee_tag(coffee_tag=None, ctx: FileContext = None):
             "./mount",
             working_dir,
             True,
-            without=[".d.ts"] if extenstion not in ["ts", "tsx"] else [],
+            without=ignored_files
         )
         brew_component(ctx=brew_ctx)
 
