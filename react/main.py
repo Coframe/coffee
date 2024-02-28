@@ -98,10 +98,10 @@ def process_coffee_tag(coffee_tag=None, ctx: FileContext = None):
     if pour:
         print(f"Pouring component to {pour}...")
         mount_coffee_files(
-            "./mount", 
-            working_dir, 
-            False, 
-            cleanup=[brew_path], 
+            "./mount",
+            working_dir,
+            False,
+            cleanup=[brew_path],
             without=ignored_files
         )
         pour_component(pour_path=pour, ctx=brew_ctx)
