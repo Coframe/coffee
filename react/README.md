@@ -140,14 +140,14 @@ You can keep iterating like this forever â€“ you can never run out of Coffee! ðŸ
 
 ## TODO
 
-- [ ] Add basic tests and GitHub CI
+- [x] Add basic tests and GitHub CI
 - [ ] Run `prettier` on generated code
 - [ ] Variety of agents: faster/smarter/cheaper
-- [ ] Add visuals and data feedback loop from componennt to agent (GPT-4V)
+- [ ] Add visuals and data feedback loop from component to agent (GPT-4V)
 - [ ] Support custom prompt
 - [ ] Support custom agents
 - [ ] Expand support for `coffee.config.json` config
-- [ ] Integrate nativly with tools like Next.js, webpack, Remix, Prettier, ESlint, etc.
+- [ ] Integrate natively with tools like Next.js, webpack, Remix, Prettier, ESlint, etc.
 - [ ] Add support for other popular frontend frameworks (Vue, Svelte, etc)
 
 ## Related
