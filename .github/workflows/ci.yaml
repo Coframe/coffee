@@ -1,0 +1,31 @@
+name: Run CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+
+jobs:
+  test-react-module:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./react
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.8"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r dev_requirements.txt
+      - name: Run unit tests
+        run: |
+          pytest
