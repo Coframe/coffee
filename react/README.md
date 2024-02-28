@@ -175,6 +175,14 @@ If you'd like to be a contributor, just submit a pull request!
 
 ⚡ We are also hiring for generalist engineers and AI engineers who are passionate about the future of UX/AI. Coffee is just one of the many exciting things we have brewing. If you want to build this future with us, please shoot us a DM on [Twitter](https://twitter.com/coframe_ai)!
 
+## Local Development
+
+```sh
+cd react
+pip3 install -r dev_requirements.txt
+pytest
+```
+
 ## License
 
 Apache 2.0 © [Coframe](https://coframe.ai)
