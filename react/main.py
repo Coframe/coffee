@@ -309,21 +309,22 @@ def mount_coffee_files(source, target, mount=True, cleanup=[], without=[]):
             os.remove(path)
 
 
+DEFAULT_CONFIG = {
+  "mount": "./components",
+  "patterns": ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx"],
+  "example": None,
+}
+
+
 def parse_config(path):
     """
     Reads and parses config file
     """
-
-    default_config = {
-        "mount": "./components",
-        "patterns": ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx"],
-        "example": None,
-    }
     try:
         with open(path, "r") as file:
-            return dict(default_config, **json.load(file))
+            return dict(DEFAULT_CONFIG, **json.load(file))
     except FileNotFoundError:
-        return default_config
+        return DEFAULT_CONFIG
 
 
 watcher = None
