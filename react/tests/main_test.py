@@ -1,10 +1,8 @@
 import unittest
-import os
-import sys
 from unittest import mock
 
 
-from main import extract_tag
+from react.main import extract_tag, set_import
 
 
 class TestExtractTag(unittest.TestCase):
@@ -34,3 +32,28 @@ class TestExtractTag(unittest.TestCase):
     def test_extract_nonexistent_tag(self):
         content = "<Tea>Content</Tea>"
         self.assertIsNone(extract_tag(content, "Coffee"))
+
+
+class TestSetImport(unittest.TestCase):
+
+    def test_add_import(self):
+        content = "import React from 'react'\n"
+        import_statement = "import MyComponent from './MyComponent'\n"
+        expected = content + import_statement
+        self.assertEqual(set_import(content, import_statement, True), (expected, True))
+
+    def test_remove_import(self):
+        import_statement = "import MyComponent from './MyComponent'\n"
+        content = "import React from 'react'\n" + import_statement
+        expected = "import React from 'react'\n"
+        self.assertEqual(set_import(content, import_statement, False), (expected, True))
+
+    def test_import_already_exists(self):
+        import_statement = "import React from 'react'\n"
+        content = import_statement
+        self.assertEqual(set_import(content, import_statement, True), (content, False))
+
+    def test_import_does_not_exist_for_removal(self):
+        import_statement = "import MyComponent from './MyComponent'\n"
+        content = "import React from 'react'\n"
+        self.assertEqual(set_import(content, import_statement, False), (content, False))
