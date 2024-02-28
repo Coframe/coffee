@@ -5,7 +5,7 @@ from openai import OpenAI
 from agents.approximate_costs import approximate_costs
 
 
-client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY", ""))
 
 
 class BaselineAgent:
