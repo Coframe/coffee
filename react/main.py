@@ -234,7 +234,7 @@ def proccess_caffeinated_component(caffeinated_component=None, ctx: FileContext 
         print(update)
 
 
-def extract_tag(file_content, tag="\w+", attribute=""):
+def extract_tag(file_content, tag="\\w+", attribute=""):
     """
     Extracts a tag from the file content based on the tag name and additional attributes.
     """
