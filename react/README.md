@@ -140,14 +140,14 @@ You can keep iterating like this forever – you can never run out of Coffee! �
 
 ## TODO
 
-- [ ] Add basic tests and GitHub CI
+- [x] Add basic tests and GitHub CI
 - [ ] Run `prettier` on generated code
 - [ ] Variety of agents: faster/smarter/cheaper
-- [ ] Add visuals and data feedback loop from componennt to agent (GPT-4V)
+- [ ] Add visuals and data feedback loop from component to agent (GPT-4V)
 - [ ] Support custom prompt
 - [ ] Support custom agents
 - [ ] Expand support for `coffee.config.json` config
-- [ ] Integrate nativly with tools like Next.js, webpack, Remix, Prettier, ESlint, etc.
+- [ ] Integrate natively with tools like Next.js, webpack, Remix, Prettier, ESlint, etc.
 - [ ] Add support for other popular frontend frameworks (Vue, Svelte, etc)
 
 ## Related
@@ -174,6 +174,14 @@ https://github.com/Coframe/coframe-public/assets/25165841/2f355984-2c6a-4773-860
 If you'd like to be a contributor, just submit a pull request!
 
 ⚡ We are also hiring for generalist engineers and AI engineers who are passionate about the future of UX/AI. Coffee is just one of the many exciting things we have brewing. If you want to build this future with us, please shoot us a DM on [Twitter](https://twitter.com/coframe_ai)!
+
+## Local Development
+
+```sh
+cd react
+pip3 install -r dev_requirements.txt
+pytest
+```
 
 ## License
 

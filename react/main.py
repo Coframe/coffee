@@ -98,10 +98,10 @@ def process_coffee_tag(coffee_tag=None, ctx: FileContext = None):
     if pour:
         print(f"Pouring component to {pour}...")
         mount_coffee_files(
-            "./mount", 
-            working_dir, 
-            False, 
-            cleanup=[brew_path], 
+            "./mount",
+            working_dir,
+            False,
+            cleanup=[brew_path],
             without=ignored_files
         )
         pour_component(pour_path=pour, ctx=brew_ctx)
@@ -234,7 +234,7 @@ def proccess_caffeinated_component(caffeinated_component=None, ctx: FileContext 
         print(update)
 
 
-def extract_tag(file_content, tag="\w+", attribute=""):
+def extract_tag(file_content, tag="\\w+", attribute=""):
     """
     Extracts a tag from the file content based on the tag name and additional attributes.
     """
@@ -309,21 +309,22 @@ def mount_coffee_files(source, target, mount=True, cleanup=[], without=[]):
             os.remove(path)
 
 
+DEFAULT_CONFIG = {
+  "mount": "./components",
+  "patterns": ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx"],
+  "example": None,
+}
+
+
 def parse_config(path):
     """
     Reads and parses config file
     """
-
-    default_config = {
-        "mount": "./components",
-        "patterns": ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx"],
-        "example": None,
-    }
     try:
         with open(path, "r") as file:
-            return dict(default_config, **json.load(file))
+            return dict(DEFAULT_CONFIG, **json.load(file))
     except FileNotFoundError:
-        return default_config
+        return DEFAULT_CONFIG
 
 
 watcher = None
