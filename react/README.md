@@ -4,12 +4,10 @@
 
 — <ins>**Cof**</ins>rame <ins>**F**</ins>ront-<ins>**E**</ins>nd <ins>**E**</ins>ngineer
 
-*Build and iterate on your UI 10x faster with AI - right from your own IDE!*
+_Build and iterate on your UI 10x faster with AI - right from your own IDE!_
 
 <p>
-<a href="https://github.com/coframe/coffee/commits"><img alt="GitHub Last Commit" src="https://img.shields.io/github/last-commit/coframe/coffee" /></a>
-<a href="https://github.com/coframe/coffee/issues"><img alt="GitHub Issues" src="https://img.shields.io/github/issues/coframe/coffee" /></a>
-<a href="https://github.com/coframe/coffee/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/badge/License-MIT-green.svg" /></a>
+<a href="https://github.com/coframe/coffee/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/badge/License-Apache%202.0-green.svg" /></a>
 <a href="https://github.com/coframe/coffee"><img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/coframe/coffee?style=social" /></a>
 </p>
 <br />
@@ -65,13 +63,11 @@ When you run Coffee, it will listen for changes to `js/jsx/ts/tsx` files in your
 ```jsx
 <Coffee parameter={parameter}>
   Here is where you put your prompt that Coffee will use to generate the first
-  version of your desired component.
-
-  This is the same type of prompt that you'd use with any LLM like ChatGPT, so
-  feel free to get creative and apply your favorite prompt engineering tricks.
-
-  Finally, you can also pass in any parameters you want from your parent component
-  by simply adding them as demonstrated above.
+  version of your desired component. This is the same type of prompt that you'd
+  use with any LLM like ChatGPT, so feel free to get creative and apply your
+  favorite prompt engineering tricks. Finally, you can also pass in any
+  parameters you want from your parent component by simply adding them as
+  demonstrated above.
 </Coffee>
 ```
 
@@ -83,8 +79,9 @@ Iterating on a component after it has been brewed is just as easy:
 
 ```jsx
 <Coffee parameter={parameter}>
-  To edit and update the brewed component, all you need to do is replace the prompt with
-  your desired changes. For instance, "make the button background darker".
+  To edit and update the brewed component, all you need to do is replace the
+  prompt with your desired changes. For instance, "make the button background
+  darker".
 </Coffee>
 ```
 
@@ -97,24 +94,22 @@ export function Example() {
   return (
     <Coffee
       title="Click Me"
-      onClick={() => console.log('clicked')}
+      onClick={() => console.log("clicked")}
       pour="MyButton.tsx"
     >
       Whatever you prompted Coffee to generate
     </Coffee>
-  )
+  );
 }
 ```
 
 In this example, we added a special `pour` prop. When you save this file, Coffee will replace this code with the following:
 
 ```tsx
-import MyButton from './MyButton'
+import MyButton from "./MyButton";
 
 export function Example() {
-  return (
-    <MyButton title='Click Me' onClick={() => console.log('clicked')} />
-  )
+  return <MyButton title="Click Me" onClick={() => console.log("clicked")} />;
 }
 ```
 
@@ -129,8 +124,12 @@ Let's say that you want to edit the MyButton (or any other) component. All you n
 ```tsx
 export function Example() {
   return (
-    <MyButton title='Click Me' onClick={() => console.log('clicked')} coffee="make the button color blue" />
-  )
+    <MyButton
+      title="Click Me"
+      onClick={() => console.log("clicked")}
+      coffee="make the button color blue"
+    />
+  );
 }
 ```
 
@@ -185,4 +184,4 @@ pytest
 
 ## License
 
-Apache 2.0 © [Coframe](https://coframe.ai)
+Apache 2.0 © [Coframe](https://coframe.com)
