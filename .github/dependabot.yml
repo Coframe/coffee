@@ -1,0 +1,29 @@
+version: 2
+updates:
+  # Update configuration for npm-based projects
+  - package-ecosystem: "npm"
+    directories:
+      - "/_roastery/jsx-app"
+      - "/_roastery/sample_app_nextjs"
+      - "/_roastery/shadcn_ui_app"
+    schedule:
+      interval: "daily"
+
+  # Update configuration for Dockerfiles
+  - package-ecosystem: "docker"
+    directories:
+      - "/_roastery/browser_extension/server"
+      - "/_roastery/latte"
+      - "/_roastery/sample_app_nextjs"
+      - "/react"
+    schedule:
+      interval: "weekly"
+
+  # Update configuration for Python dependencies via pip
+  - package-ecosystem: "pip"
+    directories:
+      - "/_roastery/browser_extension/server"
+      - "/_roastery/latte"
+      - "/react"
+    schedule:
+      interval: "weekly"
