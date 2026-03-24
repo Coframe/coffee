@@ -45,6 +45,23 @@ Just your React webapp normally, and then open another shell in the same directo
 docker run --pull=always -it -e OPENAI_API_KEY=${OPENAI_API_KEY} -v $(pwd):/mount coframe/coffee:latest
 ```
 
+### Using MiniMax as an alternative LLM provider
+
+Coffee also supports [MiniMax](https://www.minimaxi.com/) as an alternative LLM provider. MiniMax offers the M2.5 and M2.5-highspeed models via an OpenAI-compatible API. To use MiniMax instead of OpenAI, set the `LLM_PROVIDER` and `MINIMAX_API_KEY` environment variables:
+
+```bash
+docker run --pull=always -it \
+  -e LLM_PROVIDER=minimax \
+  -e MINIMAX_API_KEY=${MINIMAX_API_KEY} \
+  -v $(pwd):/mount coframe/coffee:latest
+```
+
+| Provider | Model | Context | Use Case |
+|----------|-------|---------|----------|
+| OpenAI | gpt-4-1106-preview | 128K | Default, high quality |
+| MiniMax | MiniMax-M2.5 | 204K | Cost-effective alternative |
+| MiniMax | MiniMax-M2.5-highspeed | 204K | Faster, lower cost |
+
 You can also build the image yourself from the /react directory:
 
 ```bash

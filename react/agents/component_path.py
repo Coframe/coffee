@@ -1,10 +1,7 @@
-import os
 import jinja2
 import json
-from openai import OpenAI
 from agents.approximate_costs import approximate_costs
-
-client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+from agents.llm_provider import get_client, prepare_chat_args
 
 
 class ComponentPathAgent:
@@ -49,13 +46,13 @@ class ComponentPathAgent:
 
         self.conversation_history = [{"role": "user", "content": prompt}]
 
-        gpt_args = dict(
-            model="gpt-4-1106-preview",
+        gpt_args = prepare_chat_args(
             messages=self.conversation_history,
             response_format={"type": "json_object"},
             stream=True,
         )
 
+        client = get_client()
         response_stream = self._cached_generator(
             fx=client.chat.completions.create,
             fx_args=gpt_args,
