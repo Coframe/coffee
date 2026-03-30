@@ -1,5 +1,5 @@
 # Use the official Python image as a parent image
-FROM python:3.13
+FROM python:3.14
 
 # Set the working directory in the container
 WORKDIR /app
