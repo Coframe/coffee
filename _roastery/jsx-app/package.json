@@ -14,7 +14,7 @@
     "next": "15.5.14"
   },
   "devDependencies": {
-    "eslint": "^9",
+    "eslint": "^10",
     "eslint-config-next": "15.5.14"
   }
 }
