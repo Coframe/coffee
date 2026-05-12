@@ -13,7 +13,7 @@
     "@radix-ui/react-navigation-menu": "^1.1.4",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
-    "next": "15.5.14",
+    "next": "15.5.18",
     "radix-ui": "^1.0.1",
     "react": "^19",
     "react-dom": "^19",
