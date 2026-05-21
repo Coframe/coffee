@@ -27,3 +27,10 @@ updates:
       - "/react"
     schedule:
       interval: "weekly"
+
+  # Update configuration for GitHub Actions
+  - package-ecosystem: "github-actions"
+    directories:
+      - "/.github/workflows"
+    schedule:
+      interval: "weekly"
