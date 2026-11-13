@@ -13,7 +13,7 @@
     "@radix-ui/react-navigation-menu": "^1.1.4",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
-    "next": "15.5.14",
+    "next": "15.5.29",
     "radix-ui": "^1.0.1",
     "react": "^19",
     "react-dom": "^19",
@@ -26,9 +26,13 @@
     "@types/react-dom": "^19",
     "autoprefixer": "^10.0.1",
     "eslint": "^9",
-    "eslint-config-next": "15.5.14",
-    "postcss": "^8",
+    "eslint-config-next": "15.5.29",
+    "postcss": "^8.5.32",
     "tailwindcss": "^3.3.0",
     "typescript": "^5"
+  },
+  "overrides": {
+    "postcss": "$postcss",
+    "sharp": "^0.35.5"
   }
 }
